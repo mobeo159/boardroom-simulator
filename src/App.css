@@ -1665,3 +1665,329 @@ input[type='range'] {
     font-size: 2.5rem;
   }
 }
+/* =========================================================
+   KẾT QUẢ LÝ TRÍ – TRỰC GIÁC VÀ KHUYẾN NGHỊ
+   ========================================================= */
+
+.decision-result-panel {
+  width: min(1180px, 100%);
+  margin: 26px auto 0;
+  padding: 28px;
+  border: 1px solid #294663;
+  border-radius: 22px;
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      rgba(81, 142, 255, 0.14),
+      transparent 34%
+    ),
+    rgba(12, 26, 43, 0.9);
+}
+
+.decision-result-heading {
+  margin-bottom: 22px;
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(280px, 480px);
+  gap: 28px;
+  align-items: end;
+}
+
+.decision-result-heading h2 {
+  margin: 8px 0 0;
+  color: #eef4ff;
+  font-size: clamp(
+    1.9rem,
+    4vw,
+    2.8rem
+  );
+  line-height: 1.15;
+  letter-spacing: -0.04em;
+}
+
+.decision-result-heading > p {
+  margin: 0;
+  color: #91a3bb;
+  line-height: 1.7;
+  text-align: right;
+}
+
+.decision-score-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.decision-score-grid article {
+  padding: 22px;
+  border: 1px solid #294866;
+  border-radius: 18px;
+  background: #081726;
+  text-align: center;
+}
+
+.decision-score-grid span {
+  color: #91a3bb;
+}
+
+.decision-score-grid strong {
+  display: block;
+  margin: 8px 0;
+  color: #8cb4ff;
+  font-size: 2.5rem;
+}
+
+.decision-score-grid small {
+  display: block;
+  color: #8497ae;
+  line-height: 1.6;
+}
+
+.recommendation-card {
+  margin-top: 16px;
+  padding: 22px;
+  display: grid;
+  grid-template-columns:
+    60px minmax(0, 1fr);
+  gap: 18px;
+  align-items: flex-start;
+  border-radius: 18px;
+}
+
+.recommendation-card h3 {
+  margin: 8px 0;
+  color: #f4f7ff;
+  font-size: 1.45rem;
+}
+
+.recommendation-card p:last-child {
+  margin: 0;
+  color: #b0bfd0;
+  line-height: 1.7;
+}
+
+.recommendation-positive {
+  border: 1px solid
+    rgba(60, 207, 145, 0.48);
+  background:
+    rgba(60, 207, 145, 0.08);
+}
+
+.recommendation-warning {
+  border: 1px solid
+    rgba(240, 182, 90, 0.5);
+  background:
+    rgba(240, 182, 90, 0.08);
+}
+
+.recommendation-negative {
+  border: 1px solid
+    rgba(239, 106, 120, 0.5);
+  background:
+    rgba(239, 106, 120, 0.08);
+}
+
+.recommendation-icon {
+  display: grid;
+  width: 58px;
+  height: 58px;
+  place-items: center;
+  border-radius: 17px;
+  color: #06111e;
+  background: #8cb4ff;
+  font-size: 1.55rem;
+  font-weight: 950;
+}
+
+.recommendation-positive
+  .recommendation-icon {
+  background: #3ccf91;
+}
+
+.recommendation-warning
+  .recommendation-icon {
+  background: #f0b65a;
+}
+
+.recommendation-negative
+  .recommendation-icon {
+  background: #ef6a78;
+}
+
+.score-comparison-note {
+  margin-top: 14px;
+  padding: 16px 18px;
+  border: 1px solid #294663;
+  border-radius: 14px;
+  background: #071522;
+}
+
+.score-comparison-note p {
+  margin: 0;
+  color: #a8b7c9;
+  line-height: 1.7;
+}
+
+.score-comparison-note strong {
+  color: #eaf1fc;
+}
+
+/* =========================================================
+   PHIẾU BIỂU QUYẾT VÀ XÉT GIẢI
+   ========================================================= */
+
+.vote-helper {
+  color: #91a3bb;
+  line-height: 1.7;
+}
+
+.vote-options {
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+}
+
+.vote-options button {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 7px;
+}
+
+.vote-options button > span {
+  color: inherit;
+}
+
+.vote-options button small {
+  color: #bcd1ff;
+  font-size: 0.7rem;
+  font-weight: 750;
+}
+
+.vote-options button.selected small {
+  color: #ffffff;
+}
+
+.award-reason-field {
+  margin-top: 24px;
+}
+
+.award-reason-field textarea {
+  min-height: 230px;
+  line-height: 1.65;
+}
+
+.reason-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  color: #7589a3;
+  font-size: 0.8rem;
+}
+
+.reason-meta strong {
+  color: #ef8994;
+}
+
+.reason-meta strong.valid {
+  color: #68d7a6;
+}
+
+.award-information {
+  margin-top: 16px;
+  padding: 18px;
+  display: grid;
+  grid-template-columns:
+    48px minmax(0, 1fr);
+  gap: 15px;
+  border: 1px solid
+    rgba(176, 131, 255, 0.42);
+  border-radius: 16px;
+  background:
+    rgba(176, 131, 255, 0.08);
+}
+
+.award-information > span {
+  display: grid;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  border-radius: 14px;
+  color: #0a1020;
+  background: #b083ff;
+  font-size: 1.25rem;
+  font-weight: 950;
+}
+
+.award-information strong {
+  color: #e5d5ff;
+}
+
+.award-information p {
+  margin: 7px 0 0;
+  color: #aaa0bd;
+  line-height: 1.65;
+}
+
+.dashboard-card-heading {
+  margin-bottom: 18px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.dashboard-card-heading h2 {
+  margin: 8px 0 0;
+}
+
+.award-count-chip {
+  padding: 8px 12px;
+  border: 1px solid
+    rgba(176, 131, 255, 0.4);
+  border-radius: 999px;
+  color: #d8c3ff;
+  background:
+    rgba(176, 131, 255, 0.1);
+  font-size: 0.78rem;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+@media (max-width: 800px) {
+  .decision-result-heading {
+    grid-template-columns: 1fr;
+  }
+
+  .decision-result-heading > p {
+    text-align: left;
+  }
+
+  .decision-score-grid,
+  .vote-options {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-card-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 560px) {
+  .decision-result-panel {
+    padding: 20px;
+  }
+
+  .recommendation-card,
+  .award-information {
+    grid-template-columns: 1fr;
+  }
+
+  .reason-meta {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

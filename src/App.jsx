@@ -14,6 +14,8 @@ import {
 
 const DEFAULT_ROOM_CODE = 'KOKUYO2026'
 
+const MIN_REASON_LENGTH = 40
+
 const PAGES = {
   join: 'join',
   case: 'case',
@@ -26,7 +28,6 @@ const VOTE_LABELS = {
   approve: 'Phê duyệt',
   conditional: 'Phê duyệt có điều kiện',
   reject: 'Từ chối',
-  abstain: 'Không biểu quyết',
 }
 
 const TYPE_LABELS = {
@@ -46,7 +47,8 @@ const SECTION_NUMBERS = {
 const SECTION_PRESENTATION = {
   overview: {
     eyebrow: 'TÓM TẮT VÀ Ý NGHĨA',
-    title: 'Những dữ liệu chính nói lên điều gì?',
+    title:
+      'Những dữ liệu chính nói lên điều gì?',
     description:
       'Các thông tin dưới đây giúp Hội đồng quản trị hình dung quy mô, năng lực và vị thế hiện tại của Thiên Long.',
     question:
@@ -55,7 +57,8 @@ const SECTION_PRESENTATION = {
 
   strategy: {
     eyebrow: 'PHÂN TÍCH CHIẾN LƯỢC',
-    title: 'Giao dịch có thể tạo ra những lợi ích nào?',
+    title:
+      'Giao dịch có thể tạo ra những lợi ích nào?',
     description:
       'Hãy đánh giá liệu thương vụ có giúp Kokuyo mở rộng nhanh hơn và tạo lợi thế dài hạn hay không.',
     question:
@@ -64,7 +67,8 @@ const SECTION_PRESENTATION = {
 
   financial: {
     eyebrow: 'GIẢI THÍCH CHỈ SỐ',
-    title: 'Các con số này có ý nghĩa gì?',
+    title:
+      'Các con số này có ý nghĩa gì?',
     description:
       'Đọc phần này trước khi đánh giá mức giá, premium và khả năng thu hồi giá trị của giao dịch.',
     question:
@@ -73,7 +77,8 @@ const SECTION_PRESENTATION = {
 
   people: {
     eyebrow: 'CON NGƯỜI VÀ TÍCH HỢP',
-    title: 'Những yếu tố nào ảnh hưởng đến thành công?',
+    title:
+      'Những yếu tố nào ảnh hưởng đến thành công?',
     description:
       'Giao dịch chỉ tạo giá trị khi Kokuyo giữ được con người, văn hóa và năng lực vận hành quan trọng của Thiên Long.',
     question:
@@ -82,7 +87,8 @@ const SECTION_PRESENTATION = {
 
   risks: {
     eyebrow: 'PHÂN TÍCH RỦI RO',
-    title: 'Mỗi rủi ro có thể ảnh hưởng như thế nào?',
+    title:
+      'Mỗi rủi ro có thể ảnh hưởng như thế nào?',
     description:
       'Hội đồng quản trị cần đánh giá đồng thời khả năng xảy ra và mức độ thiệt hại của từng rủi ro.',
     question:
@@ -91,7 +97,8 @@ const SECTION_PRESENTATION = {
 
   alternatives: {
     eyebrow: 'SO SÁNH PHƯƠNG ÁN',
-    title: 'Mỗi phương án có ưu và nhược điểm gì?',
+    title:
+      'Mỗi phương án có ưu và nhược điểm gì?',
     description:
       'Hãy so sánh tốc độ, quyền kiểm soát, chi phí và rủi ro trước khi lựa chọn mua lại.',
     question:
@@ -260,7 +267,10 @@ const parseExplanation = (
     ' đòi hỏi ',
   ]
 
-  for (const separator of separatorPatterns) {
+  for (
+    const separator
+    of separatorPatterns
+  ) {
     const separatorIndex =
       lowerText.indexOf(separator)
 
@@ -356,6 +366,137 @@ const parseTimelineItem = (
   }
 }
 
+const getDecisionRecommendation = (
+  rationalScore,
+  intuitiveScore,
+) => {
+  if (
+    rationalScore === null ||
+    intuitiveScore === null
+  ) {
+    return {
+      vote: 'conditional',
+      label:
+        'Chưa đủ cơ sở để kết luận',
+      tone: 'warning',
+      explanation:
+        'Một hoặc nhiều nhóm tiêu chí chưa đủ thông tin. Hội đồng quản trị nên tiếp tục thẩm định và chỉ phê duyệt khi các vấn đề quan trọng được làm rõ.',
+    }
+  }
+
+  const overallScore =
+    (rationalScore +
+      intuitiveScore) /
+    2
+
+  const scoreGap = Math.abs(
+    rationalScore -
+      intuitiveScore,
+  )
+
+  if (
+    rationalScore >= 7 &&
+    intuitiveScore >= 7 &&
+    scoreGap < 1.5
+  ) {
+    return {
+      vote: 'approve',
+      label:
+        'Nghiêng về phê duyệt',
+      tone: 'positive',
+      explanation:
+        'Cả phân tích dữ liệu và trực giác lãnh đạo đều ở mức tích cực. Giao dịch có cơ sở để được phê duyệt, nhưng Hội đồng vẫn cần giám sát giá mua, cộng hưởng và kế hoạch tích hợp.',
+    }
+  }
+
+  if (
+    overallScore >= 5.5 &&
+    rationalScore >= 4.5 &&
+    intuitiveScore >= 4.5
+  ) {
+    if (
+      rationalScore >
+      intuitiveScore + 0.75
+    ) {
+      return {
+        vote: 'conditional',
+        label:
+          'Nghiêng về phê duyệt có điều kiện',
+        tone: 'warning',
+        explanation:
+          'Dữ liệu tích cực hơn trực giác lãnh đạo. Hội đồng nên đặt điều kiện về giữ nhân sự chủ chốt, bảo vệ văn hóa, duy trì nhà phân phối và xây dựng kế hoạch tích hợp phù hợp.',
+      }
+    }
+
+    if (
+      intuitiveScore >
+      rationalScore + 0.75
+    ) {
+      return {
+        vote: 'conditional',
+        label:
+          'Nghiêng về phê duyệt có điều kiện',
+        tone: 'warning',
+        explanation:
+          'Trực giác lãnh đạo tích cực hơn dữ liệu. Hội đồng nên kiểm soát chặt định giá, premium, giả định cộng hưởng và khả năng thu hồi giá trị.',
+      }
+    }
+
+    return {
+      vote: 'conditional',
+      label:
+        'Nghiêng về phê duyệt có điều kiện',
+      tone: 'warning',
+      explanation:
+        'Lý trí và trực giác tương đối cân bằng nhưng chưa đủ mạnh để phê duyệt hoàn toàn. Nên đặt các điều kiện rõ ràng về giá, cộng hưởng, nhân sự và tích hợp.',
+    }
+  }
+
+  return {
+    vote: 'reject',
+    label: 'Nghiêng về từ chối',
+    tone: 'negative',
+    explanation:
+      'Mức điểm tổng hợp còn thấp, cho thấy lợi ích của giao dịch chưa đủ thuyết phục so với định giá, rủi ro và khả năng tích hợp.',
+  }
+}
+
+const getVotePlaceholder = (
+  finalVote,
+) => {
+  if (
+    finalVote === 'approve'
+  ) {
+    return `Gợi ý:
+1. Dữ liệu nào cho thấy giao dịch nên được phê duyệt?
+2. Lợi ích chiến lược và cộng hưởng có đủ lớn không?
+3. Rủi ro nào vẫn cần được giám sát sau khi phê duyệt?`
+  }
+
+  if (
+    finalVote === 'conditional'
+  ) {
+    return `Gợi ý:
+1. Vì sao giao dịch có thể được phê duyệt?
+2. Rủi ro lớn nhất là gì?
+3. Giá trần, giữ nhân sự, cộng hưởng hoặc kế hoạch tích hợp cần điều kiện gì?`
+  }
+
+  if (
+    finalVote === 'reject'
+  ) {
+    return `Gợi ý:
+1. Dữ liệu nào khiến bạn từ chối?
+2. Rủi ro nào là không thể chấp nhận?
+3. Kokuyo nên chọn phương án thay thế nào?`
+  }
+
+  return `Hãy chọn quyết định trước, sau đó giải thích:
+1. Dữ liệu ảnh hưởng nhiều nhất
+2. Rủi ro lớn nhất
+3. Điều kiện hoặc phương án đề xuất`
+}
+
 function BackButton({
   onClick,
   label = 'Quay lại phần trước',
@@ -378,6 +519,7 @@ function LoadingScreen({
     <main className="app-shell centered-page">
       <div className="loading-card">
         <div className="spinner" />
+
         <h2>{text}</h2>
       </div>
     </main>
@@ -439,12 +581,6 @@ function App() {
 
   const [scores, setScores] =
     useState({})
-
-  const [reasons, setReasons] =
-    useState({
-      rational: '',
-      intuitive: '',
-    })
 
   const [
     finalVote,
@@ -581,7 +717,9 @@ function App() {
           .order('sort_order'),
 
         supabase
-          .from('class_responses')
+          .from(
+            'class_responses',
+          )
           .select('*')
           .eq(
             'session_id',
@@ -646,19 +784,13 @@ function App() {
             {},
         )
 
-        setReasons({
-          rational:
-            ownResponse.rational_reason ||
-            '',
-
-          intuitive:
-            ownResponse.intuitive_reason ||
-            '',
-        })
-
         setFinalVote(
-          ownResponse.final_vote ||
-            '',
+          Object.prototype.hasOwnProperty.call(
+            VOTE_LABELS,
+            ownResponse.final_vote,
+          )
+            ? ownResponse.final_vote
+            : '',
         )
 
         setOverallComment(
@@ -676,11 +808,6 @@ function App() {
             ),
           ),
         )
-
-        setReasons({
-          rational: '',
-          intuitive: '',
-        })
 
         setFinalVote('')
         setOverallComment('')
@@ -940,6 +1067,19 @@ function App() {
       'intuitive',
     )
 
+  const decisionRecommendation =
+    useMemo(
+      () =>
+        getDecisionRecommendation(
+          myRationalScore,
+          myIntuitiveScore,
+        ),
+      [
+        myRationalScore,
+        myIntuitiveScore,
+      ],
+    )
+
   const dashboard =
     useMemo(() => {
       const rationalValues =
@@ -985,6 +1125,15 @@ function App() {
           ]),
         )
 
+      const voteTotal =
+        Object.values(
+          voteCounts,
+        ).reduce(
+          (total, count) =>
+            total + count,
+          0,
+        )
+
       const criterionStatistics =
         criteria.map(
           (criterion) => {
@@ -1006,12 +1155,15 @@ function App() {
 
             return {
               ...criterion,
+
               average:
                 average(values),
+
               deviation:
                 standardDeviation(
                   values,
                 ),
+
               count:
                 values.length,
             }
@@ -1037,9 +1189,7 @@ function App() {
       const comments =
         responses.filter(
           (response) =>
-            response.overall_comment ||
-            response.rational_reason ||
-            response.intuitive_reason,
+            response.overall_comment,
         )
 
       return {
@@ -1060,6 +1210,7 @@ function App() {
           intuitiveValues.length,
 
         voteCounts,
+        voteTotal,
         criterionStatistics,
         mostDisputed,
         comments,
@@ -1077,6 +1228,18 @@ function App() {
       if (!finalVote) {
         setError(
           'Hãy chọn phiếu biểu quyết cuối cùng.',
+        )
+
+        return
+      }
+
+      if (
+        overallComment.trim()
+          .length <
+        MIN_REASON_LENGTH
+      ) {
+        setError(
+          `Hãy giải thích quyết định bằng ít nhất ${MIN_REASON_LENGTH} ký tự để ý kiến có đủ cơ sở xét giải.`,
         )
 
         return
@@ -1107,20 +1270,15 @@ function App() {
 
         scores,
 
-        rational_reason:
-          reasons.rational.trim() ||
-          null,
+        rational_reason: null,
 
-        intuitive_reason:
-          reasons.intuitive.trim() ||
-          null,
+        intuitive_reason: null,
 
         final_vote:
           finalVote,
 
         overall_comment:
-          overallComment.trim() ||
-          null,
+          overallComment.trim(),
 
         submitted_at:
           new Date().toISOString(),
@@ -1183,12 +1341,11 @@ function App() {
       <main className="app-shell centered-page">
         <section className="join-card">
           <p className="eyebrow">
-            BOARDROOM COUNCIL V21
+            BOARDROOM COUNCIL V22
           </p>
 
           <h1>
-            Hội đồng quản trị
-            Kokuyo
+            Hội đồng quản trị Kokuyo
 
             <span>
               Lý trí và trực giác
@@ -1196,21 +1353,19 @@ function App() {
           </h1>
 
           <p className="lead">
-            Mỗi người tham gia
-            với vai trò thành
-            viên Hội đồng quản
-            trị, đọc cùng một bộ
-            dữ liệu, đánh giá độc
-            lập, bỏ phiếu và xem
-            dashboard tổng hợp
-            theo thời gian thực.
+            Mỗi người tham gia với
+            vai trò thành viên Hội
+            đồng quản trị, đọc cùng
+            một bộ dữ liệu, đánh giá
+            độc lập, bỏ phiếu và xem
+            dashboard tổng hợp theo
+            thời gian thực.
           </p>
 
           {!isSupabaseConfigured && (
             <div className="warning-box">
-              Chưa cấu hình
-              Supabase. Hãy tạo
-              file{' '}
+              Chưa cấu hình Supabase.
+              Hãy tạo file{' '}
               <code>
                 .env.local
               </code>
@@ -1223,8 +1378,8 @@ function App() {
             onSubmit={joinRoom}
           >
             <label>
-              Tên thành viên Hội
-              đồng quản trị
+              Tên thành viên Hội đồng
+              quản trị
 
               <input
                 value={displayName}
@@ -1265,18 +1420,19 @@ function App() {
               </div>
             )}
 
-            <button className="primary-button full-width">
-              Tham gia và đọc
-              case
+            <button
+              type="submit"
+              className="primary-button full-width"
+            >
+              Tham gia và đọc case
             </button>
           </form>
 
           <p className="privacy-note">
-            Không cần email hoặc
-            mật khẩu. Mỗi trình
-            duyệt được tạo một tài
-            khoản ẩn danh riêng để
-            lưu quyết định.
+            Không cần email hoặc mật
+            khẩu. Mỗi trình duyệt được
+            tạo một tài khoản ẩn danh
+            riêng để lưu quyết định.
           </p>
         </section>
       </main>
@@ -1284,9 +1440,7 @@ function App() {
   }
 
   if (!classSession) {
-    return (
-      <LoadingScreen />
-    )
+    return <LoadingScreen />
   }
 
   if (page === PAGES.case) {
@@ -1562,14 +1716,13 @@ function App() {
 
                       <div>
                         <p className="eyebrow">
-                          Ý NGHĨA ĐỐI
-                          VỚI QUYẾT ĐỊNH
+                          Ý NGHĨA ĐỐI VỚI
+                          QUYẾT ĐỊNH
                         </p>
 
                         <h3>
-                          Hội đồng quản
-                          trị cần lưu ý
-                          điều gì?
+                          Hội đồng quản trị
+                          cần lưu ý điều gì?
                         </h3>
                       </div>
                     </div>
@@ -1618,12 +1771,11 @@ function App() {
                     </h3>
 
                     <p>
-                      Hãy sử dụng dữ
-                      liệu, đánh giá rủi
-                      ro và trực giác
-                      lãnh đạo để hình
-                      thành quan điểm độc
-                      lập trước khi biểu
+                      Hãy sử dụng dữ liệu,
+                      đánh giá rủi ro và
+                      trực giác lãnh đạo để
+                      hình thành quan điểm
+                      độc lập trước khi biểu
                       quyết.
                     </p>
                   </div>
@@ -1660,8 +1812,7 @@ function App() {
                   }
                 >
                   Tiếp theo:{' '}
-                  {nextSection.title}{' '}
-                  →
+                  {nextSection.title} →
                 </button>
               ) : (
                 <button
@@ -1673,8 +1824,7 @@ function App() {
                     )
                   }
                 >
-                  Bắt đầu đánh giá
-                  →
+                  Bắt đầu đánh giá →
                 </button>
               )}
             </div>
@@ -1700,8 +1850,7 @@ function App() {
               )
             }
           >
-            Tôi đã đọc xong –
-            Đánh giá
+            Tôi đã đọc xong – Đánh giá
           </button>
         </footer>
       </main>
@@ -1711,6 +1860,13 @@ function App() {
   if (
     page === PAGES.decision
   ) {
+    const reasonLength =
+      overallComment.trim().length
+
+    const reasonIsValid =
+      reasonLength >=
+      MIN_REASON_LENGTH
+
     return (
       <main className="app-shell">
         <header className="topbar">
@@ -1725,9 +1881,9 @@ function App() {
             />
 
             <strong className="brand">
-              ĐÁNH GIÁ CÁ NHÂN
-              CỦA THÀNH VIÊN HỘI
-              ĐỒNG QUẢN TRỊ
+              ĐÁNH GIÁ CÁ NHÂN CỦA
+              THÀNH VIÊN HỘI ĐỒNG
+              QUẢN TRỊ
             </strong>
           </div>
 
@@ -1746,55 +1902,22 @@ function App() {
 
         <section className="decision-heading">
           <p className="eyebrow">
-            RATIONAL +
-            INTUITIVE DECISION
+            RATIONAL + INTUITIVE
+            DECISION
           </p>
 
           <h1>
-            Quyết định độc lập
-            của bạn
+            Quyết định độc lập của bạn
           </h1>
 
           <p>
-            Chấm điểm từ 1 đến
-            10 hoặc chọn “Không
-            đủ thông tin”. Lý do
-            chấm điểm không bắt
-            buộc.
+            Chấm điểm từ 1 đến 10 hoặc
+            chọn “Không đủ thông tin”.
+            Sau khi hoàn thành, hệ thống
+            sẽ đưa ra một khuyến nghị để
+            bạn tham khảo trước khi biểu
+            quyết.
           </p>
-        </section>
-
-        <section className="decision-summary">
-          <article>
-            <span>
-              Điểm lý trí của bạn
-            </span>
-
-            <strong>
-              {myRationalScore ===
-              null
-                ? 'N/A'
-                : myRationalScore.toFixed(
-                    2,
-                  )}
-            </strong>
-          </article>
-
-          <article>
-            <span>
-              Điểm trực giác của
-              bạn
-            </span>
-
-            <strong>
-              {myIntuitiveScore ===
-              null
-                ? 'N/A'
-                : myIntuitiveScore.toFixed(
-                    2,
-                  )}
-            </strong>
-          </article>
         </section>
 
         <section className="assessment-columns">
@@ -1887,8 +2010,8 @@ function App() {
                           }
                         />
 
-                        Không đủ thông
-                        tin để đánh giá
+                        Không đủ thông tin
+                        để đánh giá
                       </label>
 
                       <input
@@ -1918,80 +2041,216 @@ function App() {
                   )
                 },
               )}
-
-              <label className="reason-field">
-                Lý do cho nhóm{' '}
-                {TYPE_LABELS[
-                  type
-                ].toLowerCase()}
-
-                <textarea
-                  value={
-                    reasons[type]
-                  }
-                  onChange={(
-                    event,
-                  ) =>
-                    setReasons({
-                      ...reasons,
-
-                      [type]:
-                        event.target
-                          .value,
-                    })
-                  }
-                  placeholder="Không bắt buộc"
-                />
-              </label>
             </div>
           ))}
         </section>
 
+        <section className="decision-result-panel">
+          <div className="decision-result-heading">
+            <div>
+              <p className="eyebrow">
+                KẾT QUẢ ĐÁNH GIÁ
+              </p>
+
+              <h2>
+                Lý trí và trực giác của
+                bạn
+              </h2>
+            </div>
+
+            <p>
+              Kết quả được tính theo
+              trọng số của các tiêu chí.
+              Khuyến nghị chỉ mang tính
+              tham khảo, không thay thế
+              quyết định độc lập của
+              thành viên Hội đồng quản
+              trị.
+            </p>
+          </div>
+
+          <div className="decision-score-grid">
+            <article>
+              <span>
+                Điểm lý trí
+              </span>
+
+              <strong>
+                {myRationalScore ===
+                null
+                  ? 'N/A'
+                  : myRationalScore.toFixed(
+                      2,
+                    )}
+              </strong>
+
+              <small>
+                Dựa trên chiến lược,
+                khả thi kinh doanh, tài
+                chính, định giá và cộng
+                hưởng.
+              </small>
+            </article>
+
+            <article>
+              <span>
+                Điểm trực giác
+              </span>
+
+              <strong>
+                {myIntuitiveScore ===
+                null
+                  ? 'N/A'
+                  : myIntuitiveScore.toFixed(
+                      2,
+                    )}
+              </strong>
+
+              <small>
+                Dựa trên văn hóa, con
+                người, niềm tin vào lãnh
+                đạo và khả năng tích hợp.
+              </small>
+            </article>
+          </div>
+
+          <article
+            className={`recommendation-card recommendation-${decisionRecommendation.tone}`}
+          >
+            <div className="recommendation-icon">
+              {decisionRecommendation.vote ===
+              'approve'
+                ? '✓'
+                : decisionRecommendation.vote ===
+                    'reject'
+                  ? '×'
+                  : '!'}
+            </div>
+
+            <div>
+              <p className="eyebrow">
+                KHUYẾN NGHỊ TỪ KẾT
+                QUẢ CHẤM ĐIỂM
+              </p>
+
+              <h3>
+                {
+                  decisionRecommendation.label
+                }
+              </h3>
+
+              <p>
+                {
+                  decisionRecommendation.explanation
+                }
+              </p>
+            </div>
+          </article>
+
+          {myRationalScore !== null &&
+            myIntuitiveScore !==
+              null && (
+              <div className="score-comparison-note">
+                {Math.abs(
+                  myRationalScore -
+                    myIntuitiveScore,
+                ) < 0.5 ? (
+                  <p>
+                    <strong>
+                      Hai góc nhìn khá
+                      cân bằng:
+                    </strong>{' '}
+                    phân tích dữ liệu và
+                    trực giác lãnh đạo
+                    của bạn đang tương
+                    đối nhất quán.
+                  </p>
+                ) : myRationalScore >
+                  myIntuitiveScore ? (
+                  <p>
+                    <strong>
+                      Lý trí cao hơn trực
+                      giác:
+                    </strong>{' '}
+                    giao dịch có vẻ hợp
+                    lý hơn trên dữ liệu,
+                    nhưng bạn còn lo ngại
+                    về con người, văn hóa
+                    hoặc khả năng tích
+                    hợp.
+                  </p>
+                ) : (
+                  <p>
+                    <strong>
+                      Trực giác cao hơn
+                      lý trí:
+                    </strong>{' '}
+                    bạn có niềm tin vào
+                    con người và khả năng
+                    phối hợp, nhưng dữ
+                    liệu tài chính hoặc
+                    định giá chưa hoàn
+                    toàn thuyết phục.
+                  </p>
+                )}
+              </div>
+            )}
+        </section>
+
         <section className="vote-panel">
           <p className="eyebrow">
-            PHIẾU BIỂU QUYẾT
-            CUỐI CÙNG
+            PHIẾU BIỂU QUYẾT CUỐI
+            CÙNG
           </p>
 
           <h2>
-            Với vai trò thành
-            viên Hội đồng quản
-            trị, bạn lựa chọn
+            Với vai trò thành viên Hội
+            đồng quản trị, bạn lựa chọn
             gì?
           </h2>
+
+          <p className="vote-helper">
+            Bạn có thể lựa chọn khác với
+            khuyến nghị của hệ thống,
+            nhưng cần giải thích rõ căn
+            cứ của mình.
+          </p>
 
           <div className="vote-options">
             {Object.entries(
               VOTE_LABELS,
             ).map(
-              ([
-                value,
-                label,
-              ]) => (
+              ([value, label]) => (
                 <button
                   type="button"
                   key={value}
                   className={
-                    finalVote ===
-                    value
+                    finalVote === value
                       ? 'selected'
                       : ''
                   }
-                  onClick={() =>
-                    setFinalVote(
-                      value,
-                    )
-                  }
+                  onClick={() => {
+                    setFinalVote(value)
+                    setError('')
+                  }}
                 >
-                  {label}
+                  <span>
+                    {label}
+                  </span>
+
+                  {decisionRecommendation.vote ===
+                    value && (
+                    <small>
+                      Khuyến nghị từ điểm
+                    </small>
+                  )}
                 </button>
               ),
             )}
           </div>
 
-          <label>
-            Ý kiến tổng hợp của
-            thành viên
+          <label className="award-reason-field">
+            Lý do lựa chọn quyết định
 
             <textarea
               value={
@@ -1999,15 +2258,63 @@ function App() {
               }
               onChange={(
                 event,
-              ) =>
+              ) => {
                 setOverallComment(
                   event.target
                     .value,
                 )
-              }
-              placeholder="Điểm mạnh, điểm lo ngại hoặc điều kiện đề xuất — không bắt buộc"
+
+                setError('')
+              }}
+              placeholder={getVotePlaceholder(
+                finalVote,
+              )}
             />
+
+            <div className="reason-meta">
+              <span>
+                Tối thiểu{' '}
+                {
+                  MIN_REASON_LENGTH
+                }{' '}
+                ký tự để tham gia xét
+                giải
+              </span>
+
+              <strong
+                className={
+                  reasonIsValid
+                    ? 'valid'
+                    : ''
+                }
+              >
+                {reasonLength}/
+                {
+                  MIN_REASON_LENGTH
+                }
+              </strong>
+            </div>
           </label>
+
+          <div className="award-information">
+            <span>★</span>
+
+            <div>
+              <strong>
+                Ý kiến này được sử dụng
+                để xét giải
+              </strong>
+
+              <p>
+                Ban tổ chức sẽ đánh giá
+                mức độ sử dụng dữ liệu,
+                tính logic, nhận diện
+                rủi ro, điều kiện đề
+                xuất và sự cân bằng giữa
+                lý trí với trực giác.
+              </p>
+            </div>
+          </div>
 
           {error && (
             <div className="error-box">
@@ -2029,7 +2336,9 @@ function App() {
               type="button"
               className="primary-button"
               disabled={
-                isSubmitting
+                isSubmitting ||
+                !finalVote ||
+                !reasonIsValid
               }
               onClick={
                 submitDecision
@@ -2078,6 +2387,7 @@ function App() {
           <div className="topbar-actions">
             <span className="live-chip">
               <span />
+
               Cập nhật trực tiếp
             </span>
 
@@ -2106,23 +2416,21 @@ function App() {
           </p>
 
           <h1>
-            Tổng hợp quyết định
-            của Hội đồng quản trị
+            Tổng hợp quyết định của Hội
+            đồng quản trị
           </h1>
 
           <p>
-            Dashboard tự động cập
-            nhật khi có thành viên
-            gửi hoặc sửa quyết
-            định.
+            Dashboard tự động cập nhật
+            khi có thành viên gửi hoặc
+            sửa quyết định.
           </p>
         </section>
 
         <section className="dashboard-metrics">
           <article>
             <span>
-              Thành viên đã biểu
-              quyết
+              Thành viên đã biểu quyết
             </span>
 
             <strong>
@@ -2132,8 +2440,7 @@ function App() {
 
           <article>
             <span>
-              Điểm lý trí trung
-              bình
+              Điểm lý trí trung bình
             </span>
 
             <strong>
@@ -2147,8 +2454,7 @@ function App() {
 
           <article>
             <span>
-              Điểm trực giác
-              trung bình
+              Điểm trực giác trung bình
             </span>
 
             <strong>
@@ -2162,9 +2468,8 @@ function App() {
 
           <article>
             <span>
-              Tiêu chí có khác
-              biệt quan điểm lớn
-              nhất
+              Tiêu chí có khác biệt quan
+              điểm lớn nhất
             </span>
 
             <strong className="small-metric">
@@ -2197,9 +2502,9 @@ function App() {
                     ] || 0
 
                   const percentage =
-                    totalResponses
+                    dashboard.voteTotal
                       ? (count /
-                          totalResponses) *
+                          dashboard.voteTotal) *
                         100
                       : 0
 
@@ -2236,8 +2541,7 @@ function App() {
 
           <article className="dashboard-card">
             <h2>
-              Lý trí so với trực
-              giác
+              Lý trí so với trực giác
             </h2>
 
             <div className="comparison-card">
@@ -2261,8 +2565,7 @@ function App() {
 
               <div>
                 <span>
-                  Đánh giá trực
-                  giác
+                  Đánh giá trực giác
                 </span>
 
                 <strong>
@@ -2285,16 +2588,16 @@ function App() {
                   ? 'Đánh giá lý trí và trực giác của Hội đồng quản trị đang khá cân bằng.'
                   : dashboard.rationalAverage >
                       dashboard.intuitiveAverage
-                    ? 'Hội đồng quản trị đang đánh giá tích cực hơn dựa trên phân tích lý trí.'
-                    : 'Đánh giá trực giác tích cực hơn kết quả phân tích lý trí.'
+                    ? 'Hội đồng đang đánh giá tích cực hơn dựa trên phân tích dữ liệu, nhưng thận trọng hơn về con người và tích hợp.'
+                    : 'Trực giác của Hội đồng tích cực hơn kết quả phân tích dữ liệu; cần kiểm tra thêm định giá và cộng hưởng.'
                 : 'Cần thêm quyết định của các thành viên để tạo nhận định.'}
             </p>
           </article>
 
           <article className="dashboard-card full-span">
             <h2>
-              Điểm trung bình
-              theo từng tiêu chí
+              Điểm trung bình theo từng
+              tiêu chí
             </h2>
 
             <div className="criterion-table">
@@ -2352,11 +2655,26 @@ function App() {
           </article>
 
           <article className="dashboard-card full-span">
-            <h2>
-              Ý kiến của các
-              thành viên Hội đồng
-              quản trị
-            </h2>
+            <div className="dashboard-card-heading">
+              <div>
+                <p className="eyebrow">
+                  XÉT GIẢI LẬP LUẬN
+                </p>
+
+                <h2>
+                  Ý kiến của các thành
+                  viên Hội đồng quản trị
+                </h2>
+              </div>
+
+              <span className="award-count-chip">
+                {
+                  dashboard.comments
+                    .length
+                }{' '}
+                ý kiến
+              </span>
+            </div>
 
             <div className="comments-grid">
               {dashboard.comments
@@ -2380,55 +2698,24 @@ function App() {
                             VOTE_LABELS[
                               response
                                 .final_vote
-                            ]
+                            ] ||
+                            response.final_vote
                           }
                         </span>
                       </div>
 
-                      {response.rational_reason && (
-                        <p>
-                          <b>
-                            Đánh giá lý
-                            trí:
-                          </b>{' '}
-                          {
-                            response.rational_reason
-                          }
-                        </p>
-                      )}
-
-                      {response.intuitive_reason && (
-                        <p>
-                          <b>
-                            Đánh giá
-                            trực giác:
-                          </b>{' '}
-                          {
-                            response.intuitive_reason
-                          }
-                        </p>
-                      )}
-
-                      {response.overall_comment && (
-                        <p>
-                          <b>
-                            Ý kiến tổng
-                            hợp:
-                          </b>{' '}
-                          {
-                            response.overall_comment
-                          }
-                        </p>
-                      )}
+                      <p>
+                        {
+                          response.overall_comment
+                        }
+                      </p>
                     </article>
                   ),
                 )
               ) : (
                 <p>
-                  Chưa có ý kiến
-                  bằng văn bản từ
-                  thành viên Hội
-                  đồng quản trị.
+                  Chưa có ý kiến đủ điều
+                  kiện để xét giải.
                 </p>
               )}
             </div>
@@ -2441,18 +2728,16 @@ function App() {
               </p>
 
               <h2>
-                So sánh quyết
-                định với diễn
-                biến thực tế
+                So sánh quyết định với
+                diễn biến thực tế
               </h2>
 
               <p>
-                Phần tiến trình
-                giao dịch được
-                đặt sau dashboard
-                để tránh ảnh
-                hưởng đến quyết
-                định ban đầu.
+                Phần tiến trình giao dịch
+                được đặt sau dashboard để
+                tránh ảnh hưởng đến quyết
+                định ban đầu của các thành
+                viên.
               </p>
             </div>
 
@@ -2465,8 +2750,7 @@ function App() {
                 )
               }
             >
-              Xem diễn biến thực
-              tế →
+              Xem diễn biến thực tế →
             </button>
           </article>
         </section>
@@ -2505,8 +2789,7 @@ function App() {
                 )
               }
             >
-              Xem diễn biến thực
-              tế
+              Xem diễn biến thực tế
             </button>
           </div>
         </footer>
@@ -2545,8 +2828,8 @@ function App() {
             />
 
             <strong className="brand">
-              DIỄN BIẾN SAU
-              QUYẾT ĐỊNH ·{' '}
+              DIỄN BIẾN SAU QUYẾT
+              ĐỊNH ·{' '}
               {
                 classSession.room_code
               }
@@ -2578,17 +2861,15 @@ function App() {
           </p>
 
           <h1>
-            Diễn biến thực tế
-            sau quyết định
+            Diễn biến thực tế sau quyết
+            định
           </h1>
 
           <p>
-            Phần này chỉ được mở
-            sau khi biểu quyết để
-            các thành viên so sánh
-            phán đoán ban đầu với
-            diễn biến của giao
-            dịch.
+            Phần này được mở sau khi
+            biểu quyết để các thành viên
+            so sánh phán đoán ban đầu với
+            diễn biến của giao dịch.
           </p>
         </section>
 
@@ -2618,8 +2899,8 @@ function App() {
             </p>
 
             <h2>
-              Không phải mọi mốc
-              đều đã hoàn tất
+              Không phải mọi mốc đều đã
+              hoàn tất
             </h2>
 
             {timelineParagraphs
@@ -2639,37 +2920,34 @@ function App() {
             ) : (
               <>
                 <p>
-                  Việc công bố kế
-                  hoạch hoặc ký
-                  thỏa thuận chưa
-                  đồng nghĩa toàn
-                  bộ giao dịch đã
-                  hoàn tất.
+                  Việc công bố kế hoạch
+                  hoặc ký thỏa thuận chưa
+                  đồng nghĩa toàn bộ giao
+                  dịch đã hoàn tất.
                 </p>
 
                 <p>
-                  Các mốc tiếp
-                  theo còn phụ
-                  thuộc vào thủ
-                  tục pháp lý,
-                  chào mua công
-                  khai và các điều
-                  kiện hoàn tất.
+                  Các mốc tiếp theo còn
+                  phụ thuộc vào thủ tục
+                  pháp lý, chào mua công
+                  khai và các điều kiện
+                  hoàn tất giao dịch.
                 </p>
               </>
             )}
 
             <div className="outcome-warning">
               <strong>
-                Lưu ý khi thảo
-                luận
+                Lưu ý khi thảo luận
               </strong>
 
               <p>
-                Hãy phân biệt
-                giữa dữ kiện đã
-                xảy ra và kế
-                hoạch dự kiến.
+                Hãy phân biệt giữa dữ
+                kiện đã xảy ra và kế
+                hoạch dự kiến. Không sử
+                dụng các mốc tương lai
+                như một kết quả chắc
+                chắn.
               </p>
             </div>
           </article>
@@ -2682,8 +2960,7 @@ function App() {
                 </p>
 
                 <h2>
-                  Các mốc của giao
-                  dịch
+                  Các mốc của giao dịch
                 </h2>
               </div>
 
@@ -2758,22 +3035,18 @@ function App() {
         <section className="reflection-section">
           <div className="reflection-heading">
             <p className="eyebrow">
-              PHẢN TƯ SAU QUYẾT
-              ĐỊNH
+              PHẢN TƯ SAU QUYẾT ĐỊNH
             </p>
 
             <h2>
-              Quyết định ban đầu
-              của bạn thay đổi
-              như thế nào?
+              Quyết định ban đầu của bạn
+              thay đổi như thế nào?
             </h2>
 
             <p>
-              Hãy sử dụng các câu
-              hỏi dưới đây để
-              thảo luận sau khi
-              Hội đồng đã biểu
-              quyết.
+              Hãy sử dụng các câu hỏi
+              dưới đây để thảo luận sau
+              khi Hội đồng đã biểu quyết.
             </p>
           </div>
 
@@ -2782,14 +3055,14 @@ function App() {
               <span>01</span>
 
               <h3>
-                Dữ liệu nào ảnh
-                hưởng nhiều nhất?
+                Dữ liệu nào ảnh hưởng
+                nhiều nhất?
               </h3>
 
               <p>
-                Giá mua, premium,
-                cộng hưởng, con
-                người hay rủi ro?
+                Giá mua, premium, cộng
+                hưởng, con người hay rủi
+                ro tích hợp?
               </p>
             </article>
 
@@ -2797,16 +3070,14 @@ function App() {
               <span>02</span>
 
               <h3>
-                Lý trí và trực
-                giác có mâu thuẫn
-                không?
+                Lý trí và trực giác có
+                mâu thuẫn không?
               </h3>
 
               <p>
-                Khi hai cách đánh
-                giá khác nhau, bạn
-                ưu tiên yếu tố
-                nào?
+                Khi hai cách đánh giá
+                khác nhau, bạn đã ưu tiên
+                yếu tố nào?
               </p>
             </article>
 
@@ -2814,15 +3085,14 @@ function App() {
               <span>03</span>
 
               <h3>
-                Bạn có thay đổi
-                phiếu không?
+                Bạn có thay đổi phiếu
+                không?
               </h3>
 
               <p>
-                Diễn biến sau đó
-                có khiến bạn tự
-                tin hoặc thận
-                trọng hơn không?
+                Diễn biến sau đó khiến
+                bạn tự tin hay thận trọng
+                hơn?
               </p>
             </article>
 
@@ -2830,14 +3100,14 @@ function App() {
               <span>04</span>
 
               <h3>
-                Điều kiện nào quan
-                trọng nhất?
+                Điều kiện nào quan trọng
+                nhất?
               </h3>
 
               <p>
-                Giá trần, giữ nhân
-                sự, kiểm soát rủi
-                ro hay tích hợp?
+                Giá trần, giữ nhân sự,
+                kiểm soát rủi ro hay kế
+                hoạch tích hợp?
               </p>
             </article>
           </div>
@@ -2854,20 +3124,17 @@ function App() {
             </p>
 
             <h2>
-              Chất lượng quyết
-              định quan trọng hơn
-              việc đoán đúng kết
-              quả
+              Chất lượng quyết định quan
+              trọng hơn việc đoán đúng
+              kết quả
             </h2>
 
             <p>
-              Một quyết định tốt
-              cần dữ liệu phù
-              hợp, lập luận rõ
-              ràng, nhận diện rủi
-              ro, trực giác có cơ
-              sở và điều kiện
-              thực thi cụ thể.
+              Một quyết định tốt cần dữ
+              liệu phù hợp, lập luận rõ
+              ràng, nhận diện rủi ro,
+              trực giác có cơ sở và điều
+              kiện thực thi cụ thể.
             </p>
           </div>
         </section>
@@ -2891,8 +3158,7 @@ function App() {
               )
             }
           >
-            Xem lại quyết định
-            của tôi
+            Xem lại quyết định của tôi
           </button>
         </footer>
       </main>
