@@ -147,27 +147,177 @@ const standardDeviation = (values) => {
   )
 }
 
-const parseExplanation = (text) => {
-  const separatorIndex =
-    text.indexOf(':')
+const capitalizeFirstLetter = (text) => {
+  if (!text) return ''
 
-  if (separatorIndex === -1) {
+  return (
+    text.charAt(0).toUpperCase() +
+    text.slice(1)
+  )
+}
+
+const parseExplanation = (text) => {
+  const cleanedText =
+    String(text || '').trim()
+
+  const lowerText =
+    cleanedText.toLowerCase()
+
+  const isDecisionMeaning =
+    lowerText.startsWith(
+      'ý nghĩa đối với quyết định',
+    ) ||
+    lowerText.startsWith(
+      'hội đồng quản trị không nên',
+    ) ||
+    lowerText.startsWith(
+      'hội đồng quản trị nên',
+    ) ||
+    lowerText.startsWith(
+      'giao dịch chỉ nên',
+    ) ||
+    lowerText.startsWith(
+      'nên phê duyệt',
+    ) ||
+    lowerText.startsWith(
+      'nên thận trọng',
+    )
+
+  if (isDecisionMeaning) {
+    const colonIndex =
+      cleanedText.indexOf(':')
+
     return {
-      title: text,
-      description: '',
+      title:
+        colonIndex >= 0
+          ? cleanedText
+              .slice(
+                0,
+                colonIndex,
+              )
+              .trim()
+          : 'Ý nghĩa đối với quyết định',
+
+      description:
+        colonIndex >= 0
+          ? capitalizeFirstLetter(
+              cleanedText
+                .slice(
+                  colonIndex + 1,
+                )
+                .trim(),
+            )
+          : cleanedText,
+
+      isDecisionMeaning: true,
+    }
+  }
+
+  const colonIndex =
+    cleanedText.indexOf(':')
+
+  if (colonIndex >= 0) {
+    return {
+      title: cleanedText
+        .slice(0, colonIndex)
+        .trim(),
+
+      description:
+        capitalizeFirstLetter(
+          cleanedText
+            .slice(
+              colonIndex + 1,
+            )
+            .trim(),
+        ),
+
+      isDecisionMeaning: false,
+    }
+  }
+
+  const separatorPatterns = [
+    ' cho thấy ',
+    ' phản ánh ',
+    ' giúp ',
+    ' có thể ',
+    ' làm tăng ',
+    ' làm giảm ',
+    ' cho phép ',
+    ' tạo ra ',
+    ' khiến ',
+    ' đòi hỏi ',
+  ]
+
+  for (
+    const separator
+    of separatorPatterns
+  ) {
+    const separatorIndex =
+      lowerText.indexOf(
+        separator,
+      )
+
+    if (separatorIndex >= 0) {
+      const title =
+        cleanedText
+          .slice(
+            0,
+            separatorIndex,
+          )
+          .trim()
+
+      const description =
+        cleanedText
+          .slice(
+            separatorIndex +
+              separator.length,
+          )
+          .trim()
+
+      const connector =
+        separator.trim()
+
+      return {
+        title,
+
+        description:
+          capitalizeFirstLetter(
+            `${connector} ${description}`,
+          ),
+
+        isDecisionMeaning: false,
+      }
+    }
+  }
+
+  const sentenceParts =
+    cleanedText.split(
+      /(?<=[.!?])\s+/,
+    )
+
+  if (
+    sentenceParts.length > 1
+  ) {
+    return {
+      title:
+        sentenceParts[0],
+
+      description:
+        sentenceParts
+          .slice(1)
+          .join(' '),
+
+      isDecisionMeaning: false,
     }
   }
 
   return {
-    title: text
-      .slice(0, separatorIndex)
-      .trim(),
-
-    description: text
-      .slice(separatorIndex + 1)
-      .trim(),
+    title: cleanedText,
+    description: '',
+    isDecisionMeaning: false,
   }
 }
+
 
 const parseTimelineItem = (text) => {
   const separatorIndex =
@@ -1126,8 +1276,37 @@ function App() {
       SECTION_PRESENTATION.overview
 
     const items =
-      currentSection?.content?.items ||
-      []
+  currentSection?.content?.items ||
+  []
+
+const parsedItems =
+  items.map(
+    (item, itemIndex) => ({
+      id: `${itemIndex}-${item}`,
+
+      number: String(
+        itemIndex + 1,
+      ).padStart(2, '0'),
+
+      originalText: item,
+
+      ...parseExplanation(
+        item,
+      ),
+    }),
+  )
+
+const explanationItems =
+  parsedItems.filter(
+    (item) =>
+      !item.isDecisionMeaning,
+  )
+
+const decisionMeaningItems =
+  parsedItems.filter(
+    (item) =>
+      item.isDecisionMeaning,
+  )
 
     return (
       <main className="app-shell">
@@ -1272,29 +1451,73 @@ function App() {
                 </div>
 
                 <div className="explanation-grid">
-                  {items.map(
-                    (
-                      item,
-                      itemIndex,
-                    ) => {
-                      const explanation =
-                        parseExplanation(
-                          item,
-                        )
+  {explanationItems.map(
+    (item) => (
+      <article
+        className="explanation-card"
+        key={item.id}
+      >
+        <div className="explanation-number">
+          {item.number}
+        </div>
 
-                      return (
-                        <article
-                          className="explanation-card"
-                          key={`${itemIndex}-${item}`}
-                        >
-                          <div className="explanation-number">
-                            {String(
-                              itemIndex + 1,
-                            ).padStart(
-                              2,
-                              '0',
-                            )}
-                          </div>
+        <div className="explanation-content">
+          <h4>
+            {item.title}
+          </h4>
+
+          {item.description && (
+            <p>
+              {item.description}
+            </p>
+          )}
+        </div>
+      </article>
+    ),
+  )}
+</div>
+
+{decisionMeaningItems.length >
+  0 && (
+  <section className="decision-impact-section">
+    <div className="decision-impact-label">
+      <span>
+        !
+      </span>
+
+      <div>
+        <p className="eyebrow">
+          Ý NGHĨA ĐỐI VỚI
+          QUYẾT ĐỊNH
+        </p>
+
+        <h3>
+          Hội đồng quản trị cần
+          lưu ý điều gì?
+        </h3>
+      </div>
+    </div>
+
+    <div className="decision-impact-content">
+      {decisionMeaningItems.map(
+        (item) => (
+          <article
+            key={item.id}
+          >
+            <h4>
+              {item.title}
+            </h4>
+
+            <p>
+              {item.description}
+            </p>
+          </article>
+        ),
+      )}
+    </div>
+  </section>
+)}
+               
 
                           <div className="explanation-content">
                             <h4>
