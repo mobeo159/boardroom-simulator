@@ -131,7 +131,9 @@ const average = (values) => {
   )
 }
 
-const standardDeviation = (values) => {
+const standardDeviation = (
+  values,
+) => {
   if (values.length < 2) {
     return 0
   }
@@ -141,14 +143,21 @@ const standardDeviation = (values) => {
   return Math.sqrt(
     average(
       values.map((value) =>
-        Math.pow(Number(value) - mean, 2),
+        Math.pow(
+          Number(value) - mean,
+          2,
+        ),
       ),
     ),
   )
 }
 
-const capitalizeFirstLetter = (text) => {
-  if (!text) return ''
+const capitalizeFirstLetter = (
+  text,
+) => {
+  if (!text) {
+    return ''
+  }
 
   return (
     text.charAt(0).toUpperCase() +
@@ -156,9 +165,12 @@ const capitalizeFirstLetter = (text) => {
   )
 }
 
-const parseExplanation = (text) => {
-  const cleanedText =
-    String(text || '').trim()
+const parseExplanation = (
+  text,
+) => {
+  const cleanedText = String(
+    text || '',
+  ).trim()
 
   const lowerText =
     cleanedText.toLowerCase()
@@ -248,23 +260,17 @@ const parseExplanation = (text) => {
     ' đòi hỏi ',
   ]
 
-  for (
-    const separator
-    of separatorPatterns
-  ) {
+  for (const separator of separatorPatterns) {
     const separatorIndex =
-      lowerText.indexOf(
-        separator,
-      )
+      lowerText.indexOf(separator)
 
     if (separatorIndex >= 0) {
-      const title =
-        cleanedText
-          .slice(
-            0,
-            separatorIndex,
-          )
-          .trim()
+      const title = cleanedText
+        .slice(
+          0,
+          separatorIndex,
+        )
+        .trim()
 
       const description =
         cleanedText
@@ -274,15 +280,12 @@ const parseExplanation = (text) => {
           )
           .trim()
 
-      const connector =
-        separator.trim()
-
       return {
         title,
 
         description:
           capitalizeFirstLetter(
-            `${connector} ${description}`,
+            `${separator.trim()} ${description}`,
           ),
 
         isDecisionMeaning: false,
@@ -295,17 +298,13 @@ const parseExplanation = (text) => {
       /(?<=[.!?])\s+/,
     )
 
-  if (
-    sentenceParts.length > 1
-  ) {
+  if (sentenceParts.length > 1) {
     return {
-      title:
-        sentenceParts[0],
+      title: sentenceParts[0],
 
-      description:
-        sentenceParts
-          .slice(1)
-          .join(' '),
+      description: sentenceParts
+        .slice(1)
+        .join(' '),
 
       isDecisionMeaning: false,
     }
@@ -318,8 +317,9 @@ const parseExplanation = (text) => {
   }
 }
 
-
-const parseTimelineItem = (text) => {
+const parseTimelineItem = (
+  text,
+) => {
   const separatorIndex =
     text.indexOf(':')
 
@@ -344,7 +344,9 @@ const parseTimelineItem = (text) => {
 
   const isFuture =
     normalized.includes('dự kiến') ||
-    normalized.includes('nếu hoàn tất') ||
+    normalized.includes(
+      'nếu hoàn tất',
+    ) ||
     normalized.includes('có thể')
 
   return {
@@ -376,7 +378,6 @@ function LoadingScreen({
     <main className="app-shell centered-page">
       <div className="loading-card">
         <div className="spinner" />
-
         <h2>{text}</h2>
       </div>
     </main>
@@ -403,8 +404,10 @@ function App() {
       '',
   )
 
-  const [authUser, setAuthUser] =
-    useState(null)
+  const [
+    authUser,
+    setAuthUser,
+  ] = useState(null)
 
   const [
     classSession,
@@ -419,8 +422,10 @@ function App() {
   const [criteria, setCriteria] =
     useState([])
 
-  const [responses, setResponses] =
-    useState([])
+  const [
+    responses,
+    setResponses,
+  ] = useState([])
 
   const [
     myResponse,
@@ -467,7 +472,9 @@ function App() {
   const [notice, setNotice] =
     useState('')
 
-  const goToPage = (nextPage) => {
+  const goToPage = (
+    nextPage,
+  ) => {
     setPage(nextPage)
 
     window.scrollTo({
@@ -476,7 +483,9 @@ function App() {
     })
   }
 
-  const showNotice = (message) => {
+  const showNotice = (
+    message,
+  ) => {
     setNotice(message)
 
     window.setTimeout(() => {
@@ -561,7 +570,9 @@ function App() {
           .order('sort_order'),
 
         supabase
-          .from('decision_criteria')
+          .from(
+            'decision_criteria',
+          )
           .select('*')
           .eq(
             'session_id',
@@ -613,14 +624,16 @@ function App() {
         )
 
       setActiveSection(
-        firstDecisionSection?.section_key ||
+        firstDecisionSection
+          ?.section_key ||
           'overview',
       )
 
       const ownResponse =
         responseRows.find(
           (response) =>
-            response.user_id === userId,
+            response.user_id ===
+            userId,
         )
 
       setMyResponse(
@@ -629,7 +642,8 @@ function App() {
 
       if (ownResponse) {
         setScores(
-          ownResponse.scores || {},
+          ownResponse.scores ||
+            {},
         )
 
         setReasons({
@@ -643,7 +657,8 @@ function App() {
         })
 
         setFinalVote(
-          ownResponse.final_vote || '',
+          ownResponse.final_vote ||
+            '',
         )
 
         setOverallComment(
@@ -674,12 +689,16 @@ function App() {
     [],
   )
 
-  const joinRoom = async (event) => {
+  const joinRoom = async (
+    event,
+  ) => {
     event.preventDefault()
 
     setError('')
 
-    if (!isSupabaseConfigured) {
+    if (
+      !isSupabaseConfigured
+    ) {
       setError(
         'Chưa cấu hình Supabase trong file .env.local.',
       )
@@ -687,7 +706,9 @@ function App() {
       return
     }
 
-    if (!displayName.trim()) {
+    if (
+      !displayName.trim()
+    ) {
       setError(
         'Hãy nhập tên của bạn.',
       )
@@ -747,18 +768,20 @@ function App() {
         {
           event: '*',
           schema: 'public',
-          table: 'class_responses',
+          table:
+            'class_responses',
           filter:
             `session_id=eq.${classSession.id}`,
         },
-
         async () => {
           const {
             data,
             error:
               responseError,
           } = await supabase
-            .from('class_responses')
+            .from(
+              'class_responses',
+            )
             .select('*')
             .eq(
               'session_id',
@@ -773,7 +796,9 @@ function App() {
           const newResponses =
             data || []
 
-          setResponses(newResponses)
+          setResponses(
+            newResponses,
+          )
 
           const ownResponse =
             newResponses.find(
@@ -845,7 +870,8 @@ function App() {
     useCallback(
       (scoreMap, type) => {
         const group =
-          criteriaByType[type] || []
+          criteriaByType[type] ||
+          []
 
         const availableCriteria =
           group.filter(
@@ -857,7 +883,8 @@ function App() {
 
               return (
                 score !== null &&
-                score !== undefined
+                score !==
+                  undefined
               )
             },
           )
@@ -919,7 +946,8 @@ function App() {
         responses
           .map((response) =>
             calculateGroupScore(
-              response.scores || {},
+              response.scores ||
+                {},
               'rational',
             ),
           )
@@ -932,7 +960,8 @@ function App() {
         responses
           .map((response) =>
             calculateGroupScore(
-              response.scores || {},
+              response.scores ||
+                {},
               'intuitive',
             ),
           )
@@ -970,7 +999,8 @@ function App() {
                 .filter(
                   (value) =>
                     value !== null &&
-                    value !== undefined,
+                    value !==
+                      undefined,
                 )
                 .map(Number)
 
@@ -1069,7 +1099,8 @@ function App() {
         session_id:
           classSession.id,
 
-        user_id: authUser.id,
+        user_id:
+          authUser.id,
 
         display_name:
           displayName.trim(),
@@ -1084,7 +1115,8 @@ function App() {
           reasons.intuitive.trim() ||
           null,
 
-        final_vote: finalVote,
+        final_vote:
+          finalVote,
 
         overall_comment:
           overallComment.trim() ||
@@ -1100,7 +1132,9 @@ function App() {
           error:
             submitError,
         } = await supabase
-          .from('class_responses')
+          .from(
+            'class_responses',
+          )
           .upsert(
             responsePayload,
             {
@@ -1126,7 +1160,9 @@ function App() {
         goToPage(
           PAGES.dashboard,
         )
-      } catch (submitError) {
+      } catch (
+        submitError
+      ) {
         setError(
           submitError.message ||
             'Không thể gửi quyết định.',
@@ -1147,11 +1183,12 @@ function App() {
       <main className="app-shell centered-page">
         <section className="join-card">
           <p className="eyebrow">
-            BOARDROOM COUNCIL V20
+            BOARDROOM COUNCIL V21
           </p>
 
           <h1>
-            Hội đồng quản trị Kokuyo
+            Hội đồng quản trị
+            Kokuyo
 
             <span>
               Lý trí và trực giác
@@ -1159,18 +1196,21 @@ function App() {
           </h1>
 
           <p className="lead">
-            Mỗi người tham gia với vai
-            trò thành viên Hội đồng quản
-            trị, đọc cùng một bộ dữ liệu,
-            đánh giá độc lập, bỏ phiếu
-            và xem dashboard tổng hợp
+            Mỗi người tham gia
+            với vai trò thành
+            viên Hội đồng quản
+            trị, đọc cùng một bộ
+            dữ liệu, đánh giá độc
+            lập, bỏ phiếu và xem
+            dashboard tổng hợp
             theo thời gian thực.
           </p>
 
           {!isSupabaseConfigured && (
             <div className="warning-box">
-              Chưa cấu hình Supabase.
-              Hãy tạo file{' '}
+              Chưa cấu hình
+              Supabase. Hãy tạo
+              file{' '}
               <code>
                 .env.local
               </code>
@@ -1183,14 +1223,17 @@ function App() {
             onSubmit={joinRoom}
           >
             <label>
-              Tên thành viên Hội đồng
-              quản trị
+              Tên thành viên Hội
+              đồng quản trị
 
               <input
                 value={displayName}
-                onChange={(event) =>
+                onChange={(
+                  event,
+                ) =>
                   setDisplayName(
-                    event.target.value,
+                    event.target
+                      .value,
                   )
                 }
                 placeholder="Ví dụ: Hoàng Phương Thảo"
@@ -1202,9 +1245,12 @@ function App() {
 
               <input
                 value={roomCode}
-                onChange={(event) =>
+                onChange={(
+                  event,
+                ) =>
                   setRoomCode(
-                    event.target.value,
+                    event.target
+                      .value,
                   )
                 }
                 placeholder={
@@ -1220,15 +1266,17 @@ function App() {
             )}
 
             <button className="primary-button full-width">
-              Tham gia và đọc case
+              Tham gia và đọc
+              case
             </button>
           </form>
 
           <p className="privacy-note">
-            Không cần email hoặc mật
-            khẩu. Mỗi trình duyệt được
-            tạo một tài khoản ẩn danh
-            riêng để lưu quyết định.
+            Không cần email hoặc
+            mật khẩu. Mỗi trình
+            duyệt được tạo một tài
+            khoản ẩn danh riêng để
+            lưu quyết định.
           </p>
         </section>
       </main>
@@ -1236,7 +1284,9 @@ function App() {
   }
 
   if (!classSession) {
-    return <LoadingScreen />
+    return (
+      <LoadingScreen />
+    )
   }
 
   if (page === PAGES.case) {
@@ -1257,7 +1307,8 @@ function App() {
     const previousSection =
       currentSectionIndex > 0
         ? decisionSections[
-            currentSectionIndex - 1
+            currentSectionIndex -
+              1
           ]
         : null
 
@@ -1265,7 +1316,8 @@ function App() {
       currentSectionIndex <
       decisionSections.length - 1
         ? decisionSections[
-            currentSectionIndex + 1
+            currentSectionIndex +
+              1
           ]
         : null
 
@@ -1276,37 +1328,38 @@ function App() {
       SECTION_PRESENTATION.overview
 
     const items =
-  currentSection?.content?.items ||
-  []
+      currentSection?.content
+        ?.items || []
 
-const parsedItems =
-  items.map(
-    (item, itemIndex) => ({
-      id: `${itemIndex}-${item}`,
+    const parsedItems =
+      items.map(
+        (
+          item,
+          itemIndex,
+        ) => ({
+          id: `${itemIndex}-${item}`,
 
-      number: String(
-        itemIndex + 1,
-      ).padStart(2, '0'),
+          number: String(
+            itemIndex + 1,
+          ).padStart(2, '0'),
 
-      originalText: item,
+          ...parseExplanation(
+            item,
+          ),
+        }),
+      )
 
-      ...parseExplanation(
-        item,
-      ),
-    }),
-  )
+    const explanationItems =
+      parsedItems.filter(
+        (item) =>
+          !item.isDecisionMeaning,
+      )
 
-const explanationItems =
-  parsedItems.filter(
-    (item) =>
-      !item.isDecisionMeaning,
-  )
-
-const decisionMeaningItems =
-  parsedItems.filter(
-    (item) =>
-      item.isDecisionMeaning,
-  )
+    const decisionMeaningItems =
+      parsedItems.filter(
+        (item) =>
+          item.isDecisionMeaning,
+      )
 
     return (
       <main className="app-shell">
@@ -1314,15 +1367,19 @@ const decisionMeaningItems =
           <div className="topbar-left">
             <BackButton
               onClick={() =>
-                goToPage(PAGES.join)
+                goToPage(
+                  PAGES.join,
+                )
               }
               label="Rời phòng họp"
             />
 
             <strong className="brand">
-              PHÒNG HỌP HỘI ĐỒNG QUẢN
-              TRỊ ·{' '}
-              {classSession.room_code}
+              PHÒNG HỌP HỘI ĐỒNG
+              QUẢN TRỊ ·{' '}
+              {
+                classSession.room_code
+              }
             </strong>
           </div>
 
@@ -1348,11 +1405,15 @@ const decisionMeaningItems =
 
         <section className="case-heading">
           <p className="eyebrow">
-            {classSession.course_name}
+            {
+              classSession.course_name
+            }
           </p>
 
           <h1>
-            {classSession.case_title}
+            {
+              classSession.case_title
+            }
           </h1>
 
           <p>
@@ -1365,8 +1426,8 @@ const decisionMeaningItems =
         <section className="case-layout">
           <aside className="case-navigation">
             <h3>
-              Dữ liệu phục vụ Hội đồng
-              quản trị
+              Dữ liệu phục vụ Hội
+              đồng quản trị
             </h3>
 
             {decisionSections.map(
@@ -1388,7 +1449,8 @@ const decisionMeaningItems =
                 >
                   <span>
                     {SECTION_NUMBERS[
-                      section.section_key
+                      section
+                        .section_key
                     ] || '•'}
                   </span>
 
@@ -1401,17 +1463,21 @@ const decisionMeaningItems =
           <article className="case-content">
             <p className="eyebrow">
               {SECTION_NUMBERS[
-                currentSection?.section_key
+                currentSection
+                  ?.section_key
               ] || '•'}{' '}
               · CASE DATA
             </p>
 
             <h2>
-              {currentSection?.title}
+              {
+                currentSection?.title
+              }
             </h2>
 
             {(
-              currentSection?.content
+              currentSection
+                ?.content
                 ?.paragraphs || []
             ).map(
               (
@@ -1450,95 +1516,89 @@ const decisionMeaningItems =
                   </p>
                 </div>
 
-                <div className="explanation-grid">
-  {explanationItems.map(
-    (item) => (
-      <article
-        className="explanation-card"
-        key={item.id}
-      >
-        <div className="explanation-number">
-          {item.number}
-        </div>
-
-        <div className="explanation-content">
-          <h4>
-            {item.title}
-          </h4>
-
-          {item.description && (
-            <p>
-              {item.description}
-            </p>
-          )}
-        </div>
-      </article>
-    ),
-  )}
-</div>
-
-{decisionMeaningItems.length >
-  0 && (
-  <section className="decision-impact-section">
-    <div className="decision-impact-label">
-      <span>
-        !
-      </span>
-
-      <div>
-        <p className="eyebrow">
-          Ý NGHĨA ĐỐI VỚI
-          QUYẾT ĐỊNH
-        </p>
-
-        <h3>
-          Hội đồng quản trị cần
-          lưu ý điều gì?
-        </h3>
-      </div>
-    </div>
-
-    <div className="decision-impact-content">
-      {decisionMeaningItems.map(
-        (item) => (
-          <article
-            key={item.id}
-          >
-            <h4>
-              {item.title}
-            </h4>
-
-            <p>
-              {item.description}
-            </p>
-          </article>
-        ),
-      )}
-    </div>
-  </section>
-)}
-               
+                {explanationItems.length >
+                  0 && (
+                  <div className="explanation-grid">
+                    {explanationItems.map(
+                      (item) => (
+                        <article
+                          className="explanation-card"
+                          key={
+                            item.id
+                          }
+                        >
+                          <div className="explanation-number">
+                            {
+                              item.number
+                            }
+                          </div>
 
                           <div className="explanation-content">
                             <h4>
                               {
-                                explanation.title
+                                item.title
                               }
                             </h4>
 
-                            {explanation.description && (
+                            {item.description && (
                               <p>
                                 {
-                                  explanation.description
+                                  item.description
                                 }
                               </p>
                             )}
                           </div>
                         </article>
-                      )
-                    },
-                  )}
-                </div>
+                      ),
+                    )}
+                  </div>
+                )}
+
+                {decisionMeaningItems.length >
+                  0 && (
+                  <section className="decision-impact-section">
+                    <div className="decision-impact-label">
+                      <span>!</span>
+
+                      <div>
+                        <p className="eyebrow">
+                          Ý NGHĨA ĐỐI
+                          VỚI QUYẾT ĐỊNH
+                        </p>
+
+                        <h3>
+                          Hội đồng quản
+                          trị cần lưu ý
+                          điều gì?
+                        </h3>
+                      </div>
+                    </div>
+
+                    <div className="decision-impact-content">
+                      {decisionMeaningItems.map(
+                        (item) => (
+                          <article
+                            key={
+                              item.id
+                            }
+                          >
+                            <h4>
+                              {
+                                item.title
+                              }
+                            </h4>
+
+                            <p>
+                              {
+                                item.description
+                              }
+                            </p>
+                          </article>
+                        ),
+                      )}
+                    </div>
+                  </section>
+                )}
 
                 <article className="decision-note">
                   <div className="decision-note-icon">
@@ -1547,8 +1607,8 @@ const decisionMeaningItems =
 
                   <div>
                     <p className="eyebrow">
-                      CÂU HỎI CHO HỘI ĐỒNG
-                      QUẢN TRỊ
+                      CÂU HỎI CHO HỘI
+                      ĐỒNG QUẢN TRỊ
                     </p>
 
                     <h3>
@@ -1558,11 +1618,12 @@ const decisionMeaningItems =
                     </h3>
 
                     <p>
-                      Hãy sử dụng dữ liệu,
-                      đánh giá rủi ro và
-                      trực giác lãnh đạo để
-                      hình thành quan điểm
-                      độc lập trước khi biểu
+                      Hãy sử dụng dữ
+                      liệu, đánh giá rủi
+                      ro và trực giác
+                      lãnh đạo để hình
+                      thành quan điểm độc
+                      lập trước khi biểu
                       quyết.
                     </p>
                   </div>
@@ -1599,7 +1660,8 @@ const decisionMeaningItems =
                   }
                 >
                   Tiếp theo:{' '}
-                  {nextSection.title} →
+                  {nextSection.title}{' '}
+                  →
                 </button>
               ) : (
                 <button
@@ -1611,7 +1673,8 @@ const decisionMeaningItems =
                     )
                   }
                 >
-                  Bắt đầu đánh giá →
+                  Bắt đầu đánh giá
+                  →
                 </button>
               )}
             </div>
@@ -1621,7 +1684,9 @@ const decisionMeaningItems =
         <footer className="bottom-navigation">
           <BackButton
             onClick={() =>
-              goToPage(PAGES.join)
+              goToPage(
+                PAGES.join,
+              )
             }
             label="Rời phòng họp"
           />
@@ -1630,32 +1695,39 @@ const decisionMeaningItems =
             type="button"
             className="primary-button"
             onClick={() =>
-              goToPage(PAGES.decision)
+              goToPage(
+                PAGES.decision,
+              )
             }
           >
-            Tôi đã đọc xong – Đánh giá
+            Tôi đã đọc xong –
+            Đánh giá
           </button>
         </footer>
       </main>
     )
   }
 
-  if (page === PAGES.decision) {
+  if (
+    page === PAGES.decision
+  ) {
     return (
       <main className="app-shell">
         <header className="topbar">
           <div className="topbar-left">
             <BackButton
               onClick={() =>
-                goToPage(PAGES.case)
+                goToPage(
+                  PAGES.case,
+                )
               }
               label="Quay lại dữ liệu case"
             />
 
             <strong className="brand">
-              ĐÁNH GIÁ CÁ NHÂN CỦA
-              THÀNH VIÊN HỘI ĐỒNG QUẢN
-              TRỊ
+              ĐÁNH GIÁ CÁ NHÂN
+              CỦA THÀNH VIÊN HỘI
+              ĐỒNG QUẢN TRỊ
             </strong>
           </div>
 
@@ -1674,17 +1746,20 @@ const decisionMeaningItems =
 
         <section className="decision-heading">
           <p className="eyebrow">
-            RATIONAL + INTUITIVE DECISION
+            RATIONAL +
+            INTUITIVE DECISION
           </p>
 
           <h1>
-            Quyết định độc lập của bạn
+            Quyết định độc lập
+            của bạn
           </h1>
 
           <p>
-            Chấm điểm từ 1 đến 10 hoặc
-            chọn “Không đủ thông tin”.
-            Lý do chấm điểm không bắt
+            Chấm điểm từ 1 đến
+            10 hoặc chọn “Không
+            đủ thông tin”. Lý do
+            chấm điểm không bắt
             buộc.
           </p>
         </section>
@@ -1696,7 +1771,8 @@ const decisionMeaningItems =
             </span>
 
             <strong>
-              {myRationalScore === null
+              {myRationalScore ===
+              null
                 ? 'N/A'
                 : myRationalScore.toFixed(
                     2,
@@ -1706,11 +1782,13 @@ const decisionMeaningItems =
 
           <article>
             <span>
-              Điểm trực giác của bạn
+              Điểm trực giác của
+              bạn
             </span>
 
             <strong>
-              {myIntuitiveScore === null
+              {myIntuitiveScore ===
+              null
                 ? 'N/A'
                 : myIntuitiveScore.toFixed(
                     2,
@@ -1727,17 +1805,24 @@ const decisionMeaningItems =
             <div key={type}>
               <div className="group-heading">
                 <p className="eyebrow">
-                  {TYPE_LABELS[type]}
+                  {
+                    TYPE_LABELS[
+                      type
+                    ]
+                  }
                 </p>
 
                 <h2>
-                  {type === 'rational'
+                  {type ===
+                  'rational'
                     ? 'Đánh giá dựa trên dữ liệu'
                     : 'Đánh giá dựa trên trực giác lãnh đạo'}
                 </h2>
               </div>
 
-              {criteriaByType[type].map(
+              {criteriaByType[
+                type
+              ].map(
                 (criterion) => {
                   const unavailable =
                     scores[
@@ -1754,7 +1839,9 @@ const decisionMeaningItems =
                   return (
                     <article
                       className="criterion-card"
-                      key={criterion.id}
+                      key={
+                        criterion.id
+                      }
                     >
                       <div className="criterion-header">
                         <div>
@@ -1791,7 +1878,8 @@ const decisionMeaningItems =
                               ...scores,
 
                               [criterion.id]:
-                                event.target
+                                event
+                                  .target
                                   .checked
                                   ? null
                                   : 5,
@@ -1799,8 +1887,8 @@ const decisionMeaningItems =
                           }
                         />
 
-                        Không đủ thông tin
-                        để đánh giá
+                        Không đủ thông
+                        tin để đánh giá
                       </label>
 
                       <input
@@ -1819,7 +1907,8 @@ const decisionMeaningItems =
 
                             [criterion.id]:
                               Number(
-                                event.target
+                                event
+                                  .target
                                   .value,
                               ),
                           })
@@ -1837,13 +1926,18 @@ const decisionMeaningItems =
                 ].toLowerCase()}
 
                 <textarea
-                  value={reasons[type]}
-                  onChange={(event) =>
+                  value={
+                    reasons[type]
+                  }
+                  onChange={(
+                    event,
+                  ) =>
                     setReasons({
                       ...reasons,
 
                       [type]:
-                        event.target.value,
+                        event.target
+                          .value,
                     })
                   }
                   placeholder="Không bắt buộc"
@@ -1855,12 +1949,14 @@ const decisionMeaningItems =
 
         <section className="vote-panel">
           <p className="eyebrow">
-            PHIẾU BIỂU QUYẾT CUỐI CÙNG
+            PHIẾU BIỂU QUYẾT
+            CUỐI CÙNG
           </p>
 
           <h2>
-            Với vai trò thành viên Hội
-            đồng quản trị, bạn lựa chọn
+            Với vai trò thành
+            viên Hội đồng quản
+            trị, bạn lựa chọn
             gì?
           </h2>
 
@@ -1868,17 +1964,23 @@ const decisionMeaningItems =
             {Object.entries(
               VOTE_LABELS,
             ).map(
-              ([value, label]) => (
+              ([
+                value,
+                label,
+              ]) => (
                 <button
                   type="button"
                   key={value}
                   className={
-                    finalVote === value
+                    finalVote ===
+                    value
                       ? 'selected'
                       : ''
                   }
                   onClick={() =>
-                    setFinalVote(value)
+                    setFinalVote(
+                      value,
+                    )
                   }
                 >
                   {label}
@@ -1888,13 +1990,19 @@ const decisionMeaningItems =
           </div>
 
           <label>
-            Ý kiến tổng hợp của thành viên
+            Ý kiến tổng hợp của
+            thành viên
 
             <textarea
-              value={overallComment}
-              onChange={(event) =>
+              value={
+                overallComment
+              }
+              onChange={(
+                event,
+              ) =>
                 setOverallComment(
-                  event.target.value,
+                  event.target
+                    .value,
                 )
               }
               placeholder="Điểm mạnh, điểm lo ngại hoặc điều kiện đề xuất — không bắt buộc"
@@ -1910,7 +2018,9 @@ const decisionMeaningItems =
           <div className="form-actions">
             <BackButton
               onClick={() =>
-                goToPage(PAGES.case)
+                goToPage(
+                  PAGES.case,
+                )
               }
               label="Quay lại dữ liệu case"
             />
@@ -1918,8 +2028,12 @@ const decisionMeaningItems =
             <button
               type="button"
               className="primary-button"
-              disabled={isSubmitting}
-              onClick={submitDecision}
+              disabled={
+                isSubmitting
+              }
+              onClick={
+                submitDecision
+              }
             >
               {isSubmitting
                 ? 'Đang gửi...'
@@ -1933,7 +2047,9 @@ const decisionMeaningItems =
     )
   }
 
-  if (page === PAGES.dashboard) {
+  if (
+    page === PAGES.dashboard
+  ) {
     const totalResponses =
       responses.length
 
@@ -1943,22 +2059,25 @@ const decisionMeaningItems =
           <div className="topbar-left">
             <BackButton
               onClick={() =>
-                goToPage(PAGES.case)
+                goToPage(
+                  PAGES.case,
+                )
               }
               label="Quay lại dữ liệu case"
             />
 
             <strong className="brand">
-              DASHBOARD HỘI ĐỒNG QUẢN
-              TRỊ ·{' '}
-              {classSession.room_code}
+              DASHBOARD HỘI ĐỒNG
+              QUẢN TRỊ ·{' '}
+              {
+                classSession.room_code
+              }
             </strong>
           </div>
 
           <div className="topbar-actions">
             <span className="live-chip">
               <span />
-
               Cập nhật trực tiếp
             </span>
 
@@ -1981,25 +2100,29 @@ const decisionMeaningItems =
         <section className="dashboard-heading">
           <p className="eyebrow">
             PHÒNG HỌP ·{' '}
-            {classSession.room_code}
+            {
+              classSession.room_code
+            }
           </p>
 
           <h1>
-            Tổng hợp quyết định của Hội
-            đồng quản trị
+            Tổng hợp quyết định
+            của Hội đồng quản trị
           </h1>
 
           <p>
-            Dashboard tự động cập nhật
-            khi có thành viên gửi hoặc
-            sửa quyết định.
+            Dashboard tự động cập
+            nhật khi có thành viên
+            gửi hoặc sửa quyết
+            định.
           </p>
         </section>
 
         <section className="dashboard-metrics">
           <article>
             <span>
-              Thành viên đã biểu quyết
+              Thành viên đã biểu
+              quyết
             </span>
 
             <strong>
@@ -2009,7 +2132,8 @@ const decisionMeaningItems =
 
           <article>
             <span>
-              Điểm lý trí trung bình
+              Điểm lý trí trung
+              bình
             </span>
 
             <strong>
@@ -2023,7 +2147,8 @@ const decisionMeaningItems =
 
           <article>
             <span>
-              Điểm trực giác trung bình
+              Điểm trực giác
+              trung bình
             </span>
 
             <strong>
@@ -2037,12 +2162,14 @@ const decisionMeaningItems =
 
           <article>
             <span>
-              Tiêu chí có khác biệt quan
-              điểm lớn nhất
+              Tiêu chí có khác
+              biệt quan điểm lớn
+              nhất
             </span>
 
             <strong className="small-metric">
-              {dashboard.mostDisputed
+              {dashboard
+                .mostDisputed
                 ?.title ||
                 'Chưa đủ dữ liệu'}
             </strong>
@@ -2059,9 +2186,13 @@ const decisionMeaningItems =
               {Object.entries(
                 VOTE_LABELS,
               ).map(
-                ([value, label]) => {
+                ([
+                  value,
+                  label,
+                ]) => {
                   const count =
-                    dashboard.voteCounts[
+                    dashboard
+                      .voteCounts[
                       value
                     ] || 0
 
@@ -2105,7 +2236,8 @@ const decisionMeaningItems =
 
           <article className="dashboard-card">
             <h2>
-              Lý trí so với trực giác
+              Lý trí so với trực
+              giác
             </h2>
 
             <div className="comparison-card">
@@ -2129,7 +2261,8 @@ const decisionMeaningItems =
 
               <div>
                 <span>
-                  Đánh giá trực giác
+                  Đánh giá trực
+                  giác
                 </span>
 
                 <strong>
@@ -2160,15 +2293,17 @@ const decisionMeaningItems =
 
           <article className="dashboard-card full-span">
             <h2>
-              Điểm trung bình theo từng
-              tiêu chí
+              Điểm trung bình
+              theo từng tiêu chí
             </h2>
 
             <div className="criterion-table">
               {dashboard.criterionStatistics.map(
                 (criterion) => (
                   <div
-                    key={criterion.id}
+                    key={
+                      criterion.id
+                    }
                   >
                     <div>
                       <span
@@ -2176,7 +2311,9 @@ const decisionMeaningItems =
                       />
 
                       <strong>
-                        {criterion.title}
+                        {
+                          criterion.title
+                        }
                       </strong>
 
                       <small>
@@ -2216,17 +2353,20 @@ const decisionMeaningItems =
 
           <article className="dashboard-card full-span">
             <h2>
-              Ý kiến của các thành viên
-              Hội đồng quản trị
+              Ý kiến của các
+              thành viên Hội đồng
+              quản trị
             </h2>
 
             <div className="comments-grid">
-              {dashboard.comments.length >
-              0 ? (
+              {dashboard.comments
+                .length > 0 ? (
                 dashboard.comments.map(
                   (response) => (
                     <article
-                      key={response.id}
+                      key={
+                        response.id
+                      }
                     >
                       <div className="comment-heading">
                         <strong>
@@ -2248,7 +2388,8 @@ const decisionMeaningItems =
                       {response.rational_reason && (
                         <p>
                           <b>
-                            Đánh giá lý trí:
+                            Đánh giá lý
+                            trí:
                           </b>{' '}
                           {
                             response.rational_reason
@@ -2259,7 +2400,8 @@ const decisionMeaningItems =
                       {response.intuitive_reason && (
                         <p>
                           <b>
-                            Đánh giá trực giác:
+                            Đánh giá
+                            trực giác:
                           </b>{' '}
                           {
                             response.intuitive_reason
@@ -2270,7 +2412,8 @@ const decisionMeaningItems =
                       {response.overall_comment && (
                         <p>
                           <b>
-                            Ý kiến tổng hợp:
+                            Ý kiến tổng
+                            hợp:
                           </b>{' '}
                           {
                             response.overall_comment
@@ -2282,8 +2425,9 @@ const decisionMeaningItems =
                 )
               ) : (
                 <p>
-                  Chưa có ý kiến bằng văn
-                  bản từ thành viên Hội
+                  Chưa có ý kiến
+                  bằng văn bản từ
+                  thành viên Hội
                   đồng quản trị.
                 </p>
               )}
@@ -2297,16 +2441,18 @@ const decisionMeaningItems =
               </p>
 
               <h2>
-                So sánh quyết định với
-                diễn biến thực tế
+                So sánh quyết
+                định với diễn
+                biến thực tế
               </h2>
 
               <p>
-                Phần tiến trình giao dịch
-                được đặt sau dashboard để
-                tránh ảnh hưởng đến quyết
-                định ban đầu của các thành
-                viên.
+                Phần tiến trình
+                giao dịch được
+                đặt sau dashboard
+                để tránh ảnh
+                hưởng đến quyết
+                định ban đầu.
               </p>
             </div>
 
@@ -2314,10 +2460,13 @@ const decisionMeaningItems =
               type="button"
               className="primary-button"
               onClick={() =>
-                goToPage(PAGES.outcome)
+                goToPage(
+                  PAGES.outcome,
+                )
               }
             >
-              Xem diễn biến thực tế →
+              Xem diễn biến thực
+              tế →
             </button>
           </article>
         </section>
@@ -2325,7 +2474,9 @@ const decisionMeaningItems =
         <footer className="bottom-navigation">
           <BackButton
             onClick={() =>
-              goToPage(PAGES.case)
+              goToPage(
+                PAGES.case,
+              )
             }
             label="Quay lại dữ liệu case"
           />
@@ -2349,10 +2500,13 @@ const decisionMeaningItems =
               type="button"
               className="primary-button"
               onClick={() =>
-                goToPage(PAGES.outcome)
+                goToPage(
+                  PAGES.outcome,
+                )
               }
             >
-              Xem diễn biến thực tế
+              Xem diễn biến thực
+              tế
             </button>
           </div>
         </footer>
@@ -2366,14 +2520,16 @@ const decisionMeaningItems =
     )
   }
 
-  if (page === PAGES.outcome) {
+  if (
+    page === PAGES.outcome
+  ) {
     const timelineParagraphs =
       timelineSection?.content
         ?.paragraphs || []
 
     const timelineItems =
-      timelineSection?.content?.items ||
-      []
+      timelineSection?.content
+        ?.items || []
 
     return (
       <main className="app-shell">
@@ -2389,8 +2545,11 @@ const decisionMeaningItems =
             />
 
             <strong className="brand">
-              DIỄN BIẾN SAU QUYẾT ĐỊNH ·{' '}
-              {classSession.room_code}
+              DIỄN BIẾN SAU
+              QUYẾT ĐỊNH ·{' '}
+              {
+                classSession.room_code
+              }
             </strong>
           </div>
 
@@ -2419,16 +2578,17 @@ const decisionMeaningItems =
           </p>
 
           <h1>
-            Diễn biến thực tế sau quyết
-            định
+            Diễn biến thực tế
+            sau quyết định
           </h1>
 
           <p>
-            Phần này chỉ được mở sau khi
-            biểu quyết để các thành viên
-            có thể so sánh phán đoán ban
-            đầu với diễn biến thực tế của
-            giao dịch.
+            Phần này chỉ được mở
+            sau khi biểu quyết để
+            các thành viên so sánh
+            phán đoán ban đầu với
+            diễn biến của giao
+            dịch.
           </p>
         </section>
 
@@ -2458,12 +2618,12 @@ const decisionMeaningItems =
             </p>
 
             <h2>
-              Không phải mọi mốc đều đã
-              hoàn tất
+              Không phải mọi mốc
+              đều đã hoàn tất
             </h2>
 
-            {timelineParagraphs.length >
-            0 ? (
+            {timelineParagraphs
+              .length > 0 ? (
               timelineParagraphs.map(
                 (
                   paragraph,
@@ -2479,33 +2639,37 @@ const decisionMeaningItems =
             ) : (
               <>
                 <p>
-                  Việc công bố kế hoạch
-                  hoặc ký thỏa thuận chưa
-                  đồng nghĩa toàn bộ giao
-                  dịch đã hoàn tất.
+                  Việc công bố kế
+                  hoạch hoặc ký
+                  thỏa thuận chưa
+                  đồng nghĩa toàn
+                  bộ giao dịch đã
+                  hoàn tất.
                 </p>
 
                 <p>
-                  Các mốc tiếp theo còn
-                  phụ thuộc vào thủ tục
-                  pháp lý, chào mua công
-                  khai và các điều kiện
-                  hoàn tất giao dịch.
+                  Các mốc tiếp
+                  theo còn phụ
+                  thuộc vào thủ
+                  tục pháp lý,
+                  chào mua công
+                  khai và các điều
+                  kiện hoàn tất.
                 </p>
               </>
             )}
 
             <div className="outcome-warning">
               <strong>
-                Lưu ý khi thảo luận
+                Lưu ý khi thảo
+                luận
               </strong>
 
               <p>
-                Hãy phân biệt giữa dữ
-                kiện đã xảy ra và kế hoạch
-                dự kiến. Không sử dụng các
-                mốc tương lai như một kết
-                quả đã chắc chắn.
+                Hãy phân biệt
+                giữa dữ kiện đã
+                xảy ra và kế
+                hoạch dự kiến.
               </p>
             </div>
           </article>
@@ -2518,19 +2682,25 @@ const decisionMeaningItems =
                 </p>
 
                 <h2>
-                  Các mốc của giao dịch
+                  Các mốc của giao
+                  dịch
                 </h2>
               </div>
 
               <span className="timeline-count">
-                {timelineItems.length}{' '}
+                {
+                  timelineItems.length
+                }{' '}
                 mốc
               </span>
             </div>
 
             <div className="timeline-list">
               {timelineItems.map(
-                (item, index) => {
+                (
+                  item,
+                  index,
+                ) => {
                   const parsedItem =
                     parseTimelineItem(
                       item,
@@ -2588,18 +2758,22 @@ const decisionMeaningItems =
         <section className="reflection-section">
           <div className="reflection-heading">
             <p className="eyebrow">
-              PHẢN TƯ SAU QUYẾT ĐỊNH
+              PHẢN TƯ SAU QUYẾT
+              ĐỊNH
             </p>
 
             <h2>
-              Quyết định ban đầu của bạn
-              thay đổi như thế nào?
+              Quyết định ban đầu
+              của bạn thay đổi
+              như thế nào?
             </h2>
 
             <p>
-              Hãy dùng các câu hỏi dưới
-              đây để thảo luận sau khi cả
-              Hội đồng đã biểu quyết.
+              Hãy sử dụng các câu
+              hỏi dưới đây để
+              thảo luận sau khi
+              Hội đồng đã biểu
+              quyết.
             </p>
           </div>
 
@@ -2608,14 +2782,14 @@ const decisionMeaningItems =
               <span>01</span>
 
               <h3>
-                Dữ liệu nào ảnh hưởng
-                nhiều nhất?
+                Dữ liệu nào ảnh
+                hưởng nhiều nhất?
               </h3>
 
               <p>
-                Giá mua, premium, cộng
-                hưởng, con người hay rủi
-                ro tích hợp?
+                Giá mua, premium,
+                cộng hưởng, con
+                người hay rủi ro?
               </p>
             </article>
 
@@ -2623,14 +2797,16 @@ const decisionMeaningItems =
               <span>02</span>
 
               <h3>
-                Lý trí và trực giác có
-                mâu thuẫn không?
+                Lý trí và trực
+                giác có mâu thuẫn
+                không?
               </h3>
 
               <p>
-                Khi hai cách đánh giá khác
-                nhau, bạn đã ưu tiên yếu
-                tố nào?
+                Khi hai cách đánh
+                giá khác nhau, bạn
+                ưu tiên yếu tố
+                nào?
               </p>
             </article>
 
@@ -2638,14 +2814,15 @@ const decisionMeaningItems =
               <span>03</span>
 
               <h3>
-                Bạn có thay đổi phiếu
-                không?
+                Bạn có thay đổi
+                phiếu không?
               </h3>
 
               <p>
-                Diễn biến thực tế có làm
-                bạn tự tin hơn hay thận
-                trọng hơn?
+                Diễn biến sau đó
+                có khiến bạn tự
+                tin hoặc thận
+                trọng hơn không?
               </p>
             </article>
 
@@ -2653,14 +2830,14 @@ const decisionMeaningItems =
               <span>04</span>
 
               <h3>
-                Điều kiện nào là quan
+                Điều kiện nào quan
                 trọng nhất?
               </h3>
 
               <p>
-                Giá trần, giữ nhân sự,
-                kiểm soát rủi ro hay kế
-                hoạch tích hợp?
+                Giá trần, giữ nhân
+                sự, kiểm soát rủi
+                ro hay tích hợp?
               </p>
             </article>
           </div>
@@ -2677,18 +2854,20 @@ const decisionMeaningItems =
             </p>
 
             <h2>
-              Chất lượng quyết định quan
-              trọng hơn việc đoán đúng kết
+              Chất lượng quyết
+              định quan trọng hơn
+              việc đoán đúng kết
               quả
             </h2>
 
             <p>
-              Trong quản lý và lãnh đạo,
-              một quyết định tốt cần có
-              dữ liệu phù hợp, lập luận
-              rõ ràng, nhận diện rủi ro,
-              trực giác có cơ sở và điều
-              kiện thực thi cụ thể.
+              Một quyết định tốt
+              cần dữ liệu phù
+              hợp, lập luận rõ
+              ràng, nhận diện rủi
+              ro, trực giác có cơ
+              sở và điều kiện
+              thực thi cụ thể.
             </p>
           </div>
         </section>
@@ -2712,7 +2891,8 @@ const decisionMeaningItems =
               )
             }
           >
-            Xem lại quyết định của tôi
+            Xem lại quyết định
+            của tôi
           </button>
         </footer>
       </main>

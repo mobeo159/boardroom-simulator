@@ -6,6 +6,14 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+}
+
 button,
 input,
 textarea {
@@ -54,11 +62,20 @@ button:disabled {
 .vote-panel,
 .dashboard-heading,
 .dashboard-metrics,
-.dashboard-grid {
+.dashboard-grid,
+.outcome-heading,
+.outcome-status-grid,
+.outcome-layout,
+.reflection-section,
+.final-learning-note {
   width: min(1180px, 100%);
-  margin-left: auto;
   margin-right: auto;
+  margin-left: auto;
 }
+
+/* =========================================================
+   THANH ĐIỀU HƯỚNG
+   ========================================================= */
 
 .topbar {
   margin-bottom: 34px;
@@ -73,7 +90,8 @@ button:disabled {
 .bottom-navigation,
 .form-actions,
 .comment-heading,
-.bar-label {
+.bar-label,
+.footer-actions {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -105,7 +123,8 @@ button:disabled {
   transition:
     transform 0.18s ease,
     border-color 0.18s ease,
-    background 0.18s ease;
+    background 0.18s ease,
+    box-shadow 0.18s ease;
 }
 
 .back-button,
@@ -117,8 +136,12 @@ button:disabled {
 
 .primary-button {
   border: 1px solid #518eff;
-  color: white;
-  background: linear-gradient(135deg, #2f6fe4, #518eff);
+  color: #ffffff;
+  background: linear-gradient(
+    135deg,
+    #2f6fe4,
+    #518eff
+  );
 }
 
 .back-button:hover,
@@ -128,9 +151,19 @@ button:disabled {
   border-color: #79a8ff;
 }
 
+.primary-button:hover:not(:disabled) {
+  box-shadow:
+    0 12px 30px
+    rgba(47, 111, 228, 0.24);
+}
+
 .full-width {
   width: 100%;
 }
+
+/* =========================================================
+   TRANG THAM GIA
+   ========================================================= */
 
 .join-card {
   width: min(900px, 100%);
@@ -138,12 +171,18 @@ button:disabled {
   border: 1px solid #20364f;
   border-radius: 28px;
   background: rgba(12, 26, 43, 0.92);
-  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.28);
+  box-shadow:
+    0 28px 80px
+    rgba(0, 0, 0, 0.28);
 }
 
 .join-card h1 {
   margin: 18px 0;
-  font-size: clamp(2.6rem, 6.5vw, 5.7rem);
+  font-size: clamp(
+    2.6rem,
+    6.5vw,
+    5.7rem
+  );
   line-height: 1.02;
   letter-spacing: -0.06em;
 }
@@ -185,14 +224,16 @@ textarea {
   border: 1px solid #29405c;
   border-radius: 12px;
   outline: none;
-  color: white;
+  color: #ffffff;
   background: #071522;
 }
 
 input:focus,
 textarea:focus {
   border-color: #518eff;
-  box-shadow: 0 0 0 3px rgba(81, 142, 255, 0.1);
+  box-shadow:
+    0 0 0 3px
+    rgba(81, 142, 255, 0.1);
 }
 
 textarea {
@@ -216,19 +257,25 @@ input[type='range'] {
   margin-top: 18px;
   border: 1px solid #d8a747;
   color: #f6d899;
-  background: rgba(216, 167, 71, 0.1);
+  background:
+    rgba(216, 167, 71, 0.1);
 }
 
 .error-box {
   border: 1px solid #e66c7a;
   color: #ffb0ba;
-  background: rgba(230, 108, 122, 0.1);
+  background:
+    rgba(230, 108, 122, 0.1);
 }
 
 .privacy-note {
   margin: 20px 0 0;
   font-size: 0.84rem;
 }
+
+/* =========================================================
+   LOADING
+   ========================================================= */
 
 .loading-card {
   text-align: center;
@@ -250,6 +297,10 @@ input[type='range'] {
   }
 }
 
+/* =========================================================
+   CHIP TRẠNG THÁI
+   ========================================================= */
+
 .participant-chip,
 .saved-chip,
 .live-chip {
@@ -261,13 +312,15 @@ input[type='range'] {
 
 .participant-chip {
   color: #bdd2ff;
-  background: rgba(81, 142, 255, 0.14);
+  background:
+    rgba(81, 142, 255, 0.14);
 }
 
 .saved-chip,
 .live-chip {
   color: #8fe5bd;
-  background: rgba(60, 207, 145, 0.13);
+  background:
+    rgba(60, 207, 145, 0.13);
 }
 
 .live-chip {
@@ -281,8 +334,14 @@ input[type='range'] {
   height: 8px;
   border-radius: 50%;
   background: #3ccf91;
-  box-shadow: 0 0 0 5px rgba(60, 207, 145, 0.1);
+  box-shadow:
+    0 0 0 5px
+    rgba(60, 207, 145, 0.1);
 }
+
+/* =========================================================
+   TIÊU ĐỀ TRANG
+   ========================================================= */
 
 .case-heading,
 .decision-heading,
@@ -295,13 +354,22 @@ input[type='range'] {
 .decision-heading h1,
 .dashboard-heading h1 {
   margin: 10px 0;
-  font-size: clamp(2.5rem, 5vw, 4.7rem);
+  font-size: clamp(
+    2.5rem,
+    5vw,
+    4.7rem
+  );
   letter-spacing: -0.05em;
 }
 
+/* =========================================================
+   TRANG DỮ LIỆU CASE
+   ========================================================= */
+
 .case-layout {
   display: grid;
-  grid-template-columns: 300px 1fr;
+  grid-template-columns:
+    300px minmax(0, 1fr);
   gap: 22px;
   align-items: start;
 }
@@ -314,7 +382,8 @@ input[type='range'] {
   gap: 9px;
   border: 1px solid #20364f;
   border-radius: 20px;
-  background: rgba(12, 26, 43, 0.92);
+  background:
+    rgba(12, 26, 43, 0.92);
 }
 
 .case-navigation h3 {
@@ -324,6 +393,7 @@ input[type='range'] {
 }
 
 .case-navigation button {
+  width: 100%;
   padding: 13px;
   display: flex;
   align-items: center;
@@ -335,6 +405,12 @@ input[type='range'] {
   text-align: left;
 }
 
+.case-navigation button:hover {
+  color: #dce8f8;
+  background:
+    rgba(81, 142, 255, 0.07);
+}
+
 .case-navigation button span {
   min-width: 26px;
   color: #79a8ff;
@@ -344,21 +420,28 @@ input[type='range'] {
 
 .case-navigation button.active {
   border-color: #518eff;
-  color: white;
-  background: rgba(81, 142, 255, 0.14);
+  color: #ffffff;
+  background:
+    rgba(81, 142, 255, 0.14);
 }
 
 .case-content {
+  min-width: 0;
   min-height: 650px;
   padding: 34px;
   border: 1px solid #20364f;
   border-radius: 22px;
-  background: rgba(12, 26, 43, 0.89);
+  background:
+    rgba(12, 26, 43, 0.89);
 }
 
 .case-content > h2 {
   margin: 12px 0 24px;
-  font-size: clamp(2rem, 4vw, 3.1rem);
+  font-size: clamp(
+    2rem,
+    4vw,
+    3.1rem
+  );
   line-height: 1.12;
   letter-spacing: -0.035em;
 }
@@ -366,6 +449,10 @@ input[type='range'] {
 .case-content > p {
   font-size: 1.02rem;
 }
+
+/* =========================================================
+   PHẦN GIẢI THÍCH CASE
+   ========================================================= */
 
 .explanation-section {
   margin-top: 34px;
@@ -376,7 +463,9 @@ input[type='range'] {
 .explanation-heading {
   margin-bottom: 24px;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(260px, 430px);
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(260px, 430px);
   gap: 30px;
   align-items: end;
 }
@@ -385,7 +474,11 @@ input[type='range'] {
   max-width: 680px;
   margin: 10px 0 0;
   color: #eef4ff;
-  font-size: clamp(1.8rem, 3vw, 2.7rem);
+  font-size: clamp(
+    1.8rem,
+    3vw,
+    2.7rem
+  );
   line-height: 1.12;
   letter-spacing: -0.035em;
 }
@@ -400,15 +493,13 @@ input[type='range'] {
 .explanation-grid {
   display: grid;
   grid-template-columns:
-    repeat(
-      2,
-      minmax(0, 1fr)
-    );
+    repeat(2, minmax(0, 1fr));
   gap: 16px;
 }
 
 .explanation-card {
   position: relative;
+  min-width: 0;
   min-height: 210px;
   padding: 26px;
   display: grid;
@@ -422,28 +513,13 @@ input[type='range'] {
   background:
     radial-gradient(
       circle at 100% 100%,
-      rgba(
-        70,
-        132,
-        245,
-        0.14
-      ),
+      rgba(70, 132, 245, 0.14),
       transparent 38%
     ),
     linear-gradient(
       145deg,
-      rgba(
-        13,
-        32,
-        53,
-        0.98
-      ),
-      rgba(
-        7,
-        22,
-        38,
-        0.98
-      )
+      rgba(13, 32, 53, 0.98),
+      rgba(7, 22, 38, 0.98)
     );
   transition:
     transform 0.18s ease,
@@ -452,20 +528,11 @@ input[type='range'] {
 }
 
 .explanation-card:hover {
-  transform:
-    translateY(-3px);
-
-  border-color:
-    #548eff;
-
+  transform: translateY(-3px);
+  border-color: #548eff;
   box-shadow:
     0 18px 50px
-    rgba(
-      0,
-      0,
-      0,
-      0.2
-    );
+    rgba(0, 0, 0, 0.2);
 }
 
 .explanation-number {
@@ -474,21 +541,11 @@ input[type='range'] {
   height: 56px;
   place-items: center;
   border: 1px solid
-    rgba(
-      111,
-      164,
-      255,
-      0.45
-    );
+    rgba(111, 164, 255, 0.45);
   border-radius: 16px;
   color: #9abaff;
   background:
-    rgba(
-      65,
-      125,
-      235,
-      0.14
-    );
+    rgba(65, 125, 235, 0.14);
   font-size: 0.9rem;
   font-weight: 950;
   letter-spacing: 0.08em;
@@ -514,6 +571,11 @@ input[type='range'] {
   font-weight: 450;
   line-height: 1.75;
 }
+
+/* =========================================================
+   Ý NGHĨA ĐỐI VỚI QUYẾT ĐỊNH
+   ========================================================= */
+
 .decision-impact-section {
   margin-top: 20px;
   padding: 26px;
@@ -524,38 +586,18 @@ input[type='range'] {
   gap: 26px;
   align-items: start;
   border: 1px solid
-    rgba(
-      96,
-      158,
-      255,
-      0.52
-    );
+    rgba(96, 158, 255, 0.52);
   border-radius: 22px;
   background:
     radial-gradient(
       circle at 100% 100%,
-      rgba(
-        81,
-        142,
-        255,
-        0.18
-      ),
+      rgba(81, 142, 255, 0.18),
       transparent 38%
     ),
     linear-gradient(
       135deg,
-      rgba(
-        48,
-        106,
-        208,
-        0.13
-      ),
-      rgba(
-        10,
-        25,
-        42,
-        0.96
-      )
+      rgba(48, 106, 208, 0.13),
+      rgba(10, 25, 42, 0.96)
     );
 }
 
@@ -567,8 +609,7 @@ input[type='range'] {
   align-items: flex-start;
 }
 
-.decision-impact-label
-  > span {
+.decision-impact-label > span {
   display: grid;
   width: 54px;
   height: 54px;
@@ -592,24 +633,13 @@ input[type='range'] {
   gap: 12px;
 }
 
-.decision-impact-content
-  article {
+.decision-impact-content article {
   padding: 17px 18px;
   border: 1px solid
-    rgba(
-      108,
-      162,
-      255,
-      0.25
-    );
+    rgba(108, 162, 255, 0.25);
   border-radius: 15px;
   background:
-    rgba(
-      5,
-      18,
-      32,
-      0.48
-    );
+    rgba(5, 18, 32, 0.48);
 }
 
 .decision-impact-content h4 {
@@ -628,14 +658,20 @@ input[type='range'] {
   line-height: 1.7;
 }
 
+/* =========================================================
+   CÂU HỎI CHO HỘI ĐỒNG QUẢN TRỊ
+   ========================================================= */
+
 .decision-note {
   margin-top: 18px;
   padding: 24px;
   display: grid;
-  grid-template-columns: 58px minmax(0, 1fr);
+  grid-template-columns:
+    58px minmax(0, 1fr);
   gap: 19px;
   align-items: flex-start;
-  border: 1px solid rgba(240, 182, 90, 0.48);
+  border: 1px solid
+    rgba(240, 182, 90, 0.48);
   border-radius: 20px;
   background:
     radial-gradient(
@@ -663,7 +699,7 @@ input[type='range'] {
 }
 
 .decision-note h3 {
-  margin: 9px 0 9px;
+  margin: 9px 0;
   color: #f8faff;
   font-size: 1.4rem;
   line-height: 1.45;
@@ -690,12 +726,17 @@ input[type='range'] {
   justify-content: space-between;
 }
 
+/* =========================================================
+   ĐÁNH GIÁ
+   ========================================================= */
+
 .decision-summary,
 .dashboard-metrics {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
   margin-bottom: 24px;
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 14px;
 }
 
 .decision-summary article,
@@ -703,7 +744,8 @@ input[type='range'] {
   padding: 20px;
   border: 1px solid #20364f;
   border-radius: 17px;
-  background: rgba(12, 26, 43, 0.82);
+  background:
+    rgba(12, 26, 43, 0.82);
   text-align: center;
 }
 
@@ -721,7 +763,8 @@ input[type='range'] {
 }
 
 .dashboard-metrics {
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
 }
 
 .small-metric {
@@ -730,7 +773,8 @@ input[type='range'] {
 
 .assessment-columns {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
   gap: 22px;
   align-items: start;
 }
@@ -746,7 +790,8 @@ input[type='range'] {
   padding: 22px;
   border: 1px solid #20364f;
   border-radius: 18px;
-  background: rgba(12, 26, 43, 0.86);
+  background:
+    rgba(12, 26, 43, 0.86);
 }
 
 .criterion-card {
@@ -795,7 +840,8 @@ input[type='range'] {
 .vote-options {
   margin: 20px 0;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
   gap: 11px;
 }
 
@@ -809,9 +855,13 @@ input[type='range'] {
   font-weight: 850;
 }
 
+.vote-options button:hover {
+  border-color: #518eff;
+}
+
 .vote-options button.selected {
   border-color: #518eff;
-  color: white;
+  color: #ffffff;
   background: #2f6fe4;
 }
 
@@ -820,9 +870,14 @@ input[type='range'] {
   justify-content: space-between;
 }
 
+/* =========================================================
+   DASHBOARD
+   ========================================================= */
+
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
   gap: 16px;
 }
 
@@ -872,7 +927,8 @@ input[type='range'] {
 .comparison-card {
   min-height: 170px;
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns:
+    1fr auto 1fr;
   align-items: center;
   text-align: center;
 }
@@ -902,15 +958,21 @@ input[type='range'] {
 .criterion-table > div {
   padding: 13px 0;
   display: grid;
-  grid-template-columns: 280px 1fr 70px;
+  grid-template-columns:
+    280px minmax(0, 1fr) 70px;
   gap: 16px;
   align-items: center;
   border-bottom: 1px solid #20364f;
 }
 
+.criterion-table > div:last-child {
+  border-bottom: 0;
+}
+
 .criterion-table > div > div:first-child {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns:
+    auto minmax(0, 1fr);
   gap: 0 9px;
   align-items: center;
 }
@@ -944,12 +1006,17 @@ input[type='range'] {
 .criterion-score-bar div {
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, #2f6fe4, #8cb4ff);
+  background: linear-gradient(
+    90deg,
+    #2f6fe4,
+    #8cb4ff
+  );
 }
 
 .comments-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -979,140 +1046,22 @@ input[type='range'] {
   position: fixed;
   right: 22px;
   bottom: 22px;
+  z-index: 100;
   padding: 13px 18px;
   border: 1px solid #3ccf91;
   border-radius: 12px;
   color: #dffff0;
   background: #102a23;
-  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.28);
+  box-shadow:
+    0 16px 50px
+    rgba(0, 0, 0, 0.28);
 }
 
-@media (max-width: 1000px) {
-  .case-layout {
-    grid-template-columns: 1fr;
-  }
+/* =========================================================
+   KHỐI XEM DIỄN BIẾN
+   ========================================================= */
 
-  .case-navigation {
-    position: static;
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .case-navigation h3 {
-    grid-column: 1 / -1;
-  }
-
-  .assessment-columns {
-    grid-template-columns: 1fr;
-  }
-
-  .group-heading {
-    min-height: auto;
-  }
-
-  .dashboard-metrics {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .criterion-table > div {
-    grid-template-columns: 230px 1fr 60px;
-  }
-}
-
-@media (max-width: 900px) {
-  .explanation-heading {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-
-  .explanation-heading > p {
-    text-align: left;
-  }
-
-  .explanation-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 720px) {
-  .app-shell {
-    padding: 16px;
-  }
-
-  .topbar,
-  .bottom-navigation,
-  .section-navigation,
-  .form-actions {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .topbar-actions {
-    width: 100%;
-  }
-
-  .back-button,
-  .primary-button,
-  .secondary-button {
-    width: 100%;
-  }
-
-  .join-card {
-    padding: 28px;
-  }
-
-  .case-navigation,
-  .decision-summary,
-  .dashboard-metrics,
-  .dashboard-grid,
-  .vote-options,
-  .comments-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .full-span {
-    grid-column: auto;
-  }
-
-  .criterion-header {
-    flex-direction: column;
-  }
-
-  .criterion-header > strong {
-    width: 78px;
-  }
-
-  .criterion-table > div {
-    grid-template-columns: 1fr;
-  }
-
-  .comparison-card {
-    grid-template-columns: 1fr;
-    gap: 14px;
-  }
-
-  .versus {
-    display: none;
-  }
-}
-
-@media (max-width: 560px) {
-  .explanation-card,
-  .decision-note {
-    grid-template-columns: 1fr;
-  }
-
-  .explanation-card {
-    min-height: auto;
-  }
-
-  .case-content {
-    padding: 22px;
-  }
-}
 .footer-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
   flex-wrap: wrap;
 }
 
@@ -1135,7 +1084,7 @@ input[type='range'] {
 }
 
 .outcome-preview h2 {
-  margin: 8px 0 8px;
+  margin: 8px 0;
 }
 
 .outcome-preview p:last-child {
@@ -1149,15 +1098,9 @@ input[type='range'] {
   flex-shrink: 0;
 }
 
-.outcome-heading,
-.outcome-status-grid,
-.outcome-layout,
-.reflection-section,
-.final-learning-note {
-  width: min(1180px, 100%);
-  margin-left: auto;
-  margin-right: auto;
-}
+/* =========================================================
+   TRANG DIỄN BIẾN SAU QUYẾT ĐỊNH
+   ========================================================= */
 
 .outcome-heading {
   margin-bottom: 32px;
@@ -1332,13 +1275,11 @@ input[type='range'] {
 }
 
 .timeline-item.completed {
-  border-left:
-    4px solid #3ccf91;
+  border-left: 4px solid #3ccf91;
 }
 
 .timeline-item.future {
-  border-left:
-    4px solid #f0b65a;
+  border-left: 4px solid #f0b65a;
 }
 
 .timeline-marker {
@@ -1381,16 +1322,14 @@ input[type='range'] {
 }
 
 .timeline-item.completed
-  .timeline-item-heading
-  span {
+.timeline-item-heading span {
   color: #8fe5bd;
   background:
     rgba(60, 207, 145, 0.12);
 }
 
 .timeline-item.future
-  .timeline-item-heading
-  span {
+.timeline-item-heading span {
   color: #f4cf87;
   background:
     rgba(240, 182, 90, 0.12);
@@ -1401,6 +1340,10 @@ input[type='range'] {
   color: #9faec0;
   line-height: 1.7;
 }
+
+/* =========================================================
+   PHẢN TƯ SAU QUYẾT ĐỊNH
+   ========================================================= */
 
 .reflection-section {
   margin-top: 20px;
@@ -1513,7 +1456,43 @@ input[type='range'] {
   line-height: 1.75;
 }
 
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
 @media (max-width: 1000px) {
+  .case-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .case-navigation {
+    position: static;
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .case-navigation h3 {
+    grid-column: 1 / -1;
+  }
+
+  .assessment-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .group-heading {
+    min-height: auto;
+  }
+
+  .dashboard-metrics {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .criterion-table > div {
+    grid-template-columns:
+      230px minmax(0, 1fr) 60px;
+  }
+
   .outcome-layout {
     grid-template-columns: 1fr;
   }
@@ -1528,7 +1507,89 @@ input[type='range'] {
   }
 }
 
+@media (max-width: 900px) {
+  .explanation-heading {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .explanation-heading > p {
+    text-align: left;
+  }
+
+  .explanation-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .decision-impact-section {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 720px) {
+  .app-shell {
+    padding: 16px;
+  }
+
+  .topbar,
+  .bottom-navigation,
+  .section-navigation,
+  .form-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .topbar-left,
+  .topbar-actions {
+    width: 100%;
+  }
+
+  .back-button,
+  .primary-button,
+  .secondary-button {
+    width: 100%;
+  }
+
+  .join-card {
+    padding: 28px;
+  }
+
+  .case-navigation,
+  .decision-summary,
+  .dashboard-metrics,
+  .dashboard-grid,
+  .vote-options,
+  .comments-grid,
+  .outcome-status-grid,
+  .reflection-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .full-span {
+    grid-column: auto;
+  }
+
+  .criterion-header {
+    flex-direction: column;
+  }
+
+  .criterion-header > strong {
+    width: 78px;
+  }
+
+  .criterion-table > div {
+    grid-template-columns: 1fr;
+  }
+
+  .comparison-card {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .versus {
+    display: none;
+  }
+
   .footer-actions {
     width: 100%;
     flex-direction: column;
@@ -1545,11 +1606,6 @@ input[type='range'] {
 
   .outcome-preview .primary-button {
     width: 100%;
-  }
-
-  .outcome-status-grid,
-  .reflection-grid {
-    grid-template-columns: 1fr;
   }
 
   .outcome-introduction,
@@ -1570,5 +1626,42 @@ input[type='range'] {
 
   .final-learning-note {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .join-card {
+    padding: 24px;
+    border-radius: 22px;
+  }
+
+  .case-content {
+    padding: 22px;
+  }
+
+  .case-navigation {
+    padding: 16px;
+  }
+
+  .explanation-card,
+  .decision-note,
+  .decision-impact-label {
+    grid-template-columns: 1fr;
+  }
+
+  .explanation-card {
+    min-height: auto;
+  }
+
+  .decision-impact-section {
+    padding: 20px;
+  }
+
+  .decision-note {
+    padding: 20px;
+  }
+
+  .outcome-heading h1 {
+    font-size: 2.5rem;
   }
 }
