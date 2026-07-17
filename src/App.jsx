@@ -88,6 +88,26 @@ const standardDeviation = (
     ),
   )
 }
+const parseExplanation = (text) => {
+  const separatorIndex = text.indexOf(':')
+
+  if (separatorIndex === -1) {
+    return {
+      title: 'Thông tin cần lưu ý',
+      description: text,
+    }
+  }
+
+  return {
+    title: text
+      .slice(0, separatorIndex)
+      .trim(),
+
+    description: text
+      .slice(separatorIndex + 1)
+      .trim(),
+  }
+}
 
 function BackButton({
   onClick,
@@ -980,11 +1000,10 @@ function App() {
           </p>
 
           <h1>
-            Đọc case, đánh giá
+             Hội đồng quản trị Kokuyo
             <span>
               {' '}
-              lý trí và trực
-              giác.
+              Lý trí và trực giác
             </span>
           </h1>
 
@@ -1274,25 +1293,101 @@ function App() {
               </div>
             )}
 
-            {currentSection
-              ?.content?.items
-              ?.length > 0 && (
-              <ul className="case-list">
-                {currentSection.content.items.map(
-                  (
-                    item,
+         {currentSection
+  ?.content?.items
+  ?.length > 0 &&
+  (currentSection.section_key ===
+  'financial' ? (
+    <section className="explanation-section">
+      <div className="explanation-heading">
+        <div>
+          <p className="eyebrow">
+            GIẢI THÍCH CHỈ SỐ
+          </p>
 
-                    itemIndex,
-                  ) => (
-                    <li
-                      key={`${itemIndex}-${item}`}
-                    >
-                      {item}
-                    </li>
-                  ),
-                )}
-              </ul>
-            )}
+          <h3>
+            Các con số này có ý nghĩa gì?
+          </h3>
+        </div>
+
+        <p>
+          Đọc phần này trước khi đánh giá
+          mức độ hợp lý của giao dịch.
+        </p>
+      </div>
+
+      <div className="explanation-grid">
+        {currentSection.content.items.map(
+          (item, itemIndex) => {
+            const explanation =
+              parseExplanation(item)
+
+            return (
+              <article
+                className="explanation-card"
+                key={`${itemIndex}-${item}`}
+              >
+                <div className="explanation-number">
+                  {String(
+                    itemIndex + 1,
+                  ).padStart(2, '0')}
+                </div>
+
+                <div>
+                  <h4>
+                    {explanation.title}
+                  </h4>
+
+                  <p>
+                    {
+                      explanation.description
+                    }
+                  </p>
+                </div>
+              </article>
+            )
+          },
+        )}
+      </div>
+
+      <article className="decision-note">
+        <div className="decision-note-icon">
+          !
+        </div>
+
+        <div>
+          <p className="eyebrow">
+            CÂU HỎI CHO HỘI ĐỒNG QUẢN TRỊ
+          </p>
+
+          <h3>
+            Giá trị cộng hưởng có đủ bù
+            phần giá trả thêm không?
+          </h3>
+
+          <p>
+            Giao dịch chỉ hợp lý khi lợi
+            nhuận bổ sung, tăng trưởng và
+            lợi ích chiến lược có thể bù
+            được premium, chi phí tích hợp
+            và rủi ro thực hiện.
+          </p>
+        </div>
+      </article>
+    </section>
+  ) : (
+    <ul className="case-list">
+      {currentSection.content.items.map(
+        (item, itemIndex) => (
+          <li
+            key={`${itemIndex}-${item}`}
+          >
+            {item}
+          </li>
+        ),
+      )}
+    </ul>
+  ))}
 
             <div className="section-navigation">
               <BackButton
